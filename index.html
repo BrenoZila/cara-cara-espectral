@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cara a Cara Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-night:#161c25;
+    --bg-night-2:#1e2733;
+    --paper:#f3ead2;
+    --paper-dark:#e7d9b7;
+    --ink:#2b2118;
+    --ink-soft:#5b4a38;
+    --red-stamp:#a8371f;
+    --brass:#c8a13a;
+    --brass-dim:#8f7226;
+    --cream-text:#eee3c8;
+    --green-ok:#3f7a45;
+    --red-no:#a8371f;
+    --radius:6px;
+    --font-display:'Oswald', sans-serif;
+    --font-body:'Public Sans', sans-serif;
+    --font-mono:'Courier Prime', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font-body);
+    color:var(--cream-text);
+    background:
+      radial-gradient(ellipse at top, #232e3c 0%, var(--bg-night) 55%, #0f141b 100%);
+    min-height:100vh;
+    line-height:1.45;
+  }
+  h1,h2,h3,h4,p,ul,ol{margin:0;}
+  ul,ol{padding-left:1.1em;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  input,select{font-family:inherit;}
+  a{color:var(--brass);}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important;} }
+
+  .wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
+  .center-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+
+  .topbar{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:18px;}
+  .brand{
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:2rem;
+    color:var(--brass);
+    border-bottom:3px solid var(--red-stamp);
+    padding-bottom:4px;
+    display:inline-block;
+  }
+  .brand span{color:var(--cream-text);font-size:.55em;letter-spacing:4px;margin-left:6px;}
+  .small-brand{font-size:1.3rem;}
+  .subtitle{color:#b9ac8c;margin-top:4px;}
+  .mono{font-family:var(--font-mono);}
+  .small{font-size:.78rem;}
+  .dim{opacity:.6;}
+  .footnote{text-align:center;margin-top:30px;color:#8f9aa8;}
+
+  .paper-panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:var(--radius);
+    border:1px solid var(--paper-dark);
+    box-shadow:0 8px 24px rgba(0,0,0,.45);
+    padding:20px;
+  }
+  .panel-title{
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    letter-spacing:1px;
+    font-size:1.15rem;
+    color:var(--ink);
+    margin-bottom:10px;
+    border-bottom:2px solid var(--brass-dim);
+    padding-bottom:6px;
+  }
+  .panel-title.small{font-size:.95rem;margin-bottom:6px;}
+
+  .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:720px){ .home-grid{grid-template-columns:1fr;} }
+
+  .field-label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);margin:12px 0 4px;}
+  .text-input{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #c9b98a;
+    border-radius:4px;
+    background:#fffdf6;
+    color:var(--ink);
+    font-size:1rem;
+  }
+  .hint{margin-top:8px;color:var(--ink-soft);font-size:.9rem;}
+  .error-text{color:var(--red-stamp);font-weight:600;margin-top:8px;font-size:.9rem;}
+
+  .btn{
+    display:inline-block;
+    margin-top:14px;
+    margin-right:8px;
+    padding:10px 18px;
+    border-radius:4px;
+    font-weight:600;
+    letter-spacing:.3px;
+    font-size:.92rem;
+    transition:transform .1s ease, filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.08);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none;}
+  .btn-primary{background:linear-gradient(180deg,var(--brass),var(--brass-dim));color:#1c1608;}
+  .btn-secondary{background:#2c3644;color:var(--cream-text);border:1px solid var(--brass-dim);}
+  .btn-ghost{background:transparent;color:var(--brass);border:1px solid transparent;}
+  .btn-danger{background:#5c2019;color:#f3d9d2;}
+  .btn.tiny{padding:5px 10px;font-size:.75rem;margin-top:0;}
+  .file-btn{position:relative;}
+  .file-btn.small{margin-top:8px;}
+
+  details.how-to{margin-top:22px;color:#cfc4a6;}
+  details.how-to summary{cursor:pointer;color:var(--brass);font-weight:600;}
+  details.how-to ol{margin-top:8px;}
+  details.how-to li{margin-bottom:4px;}
+
+  /* Catalog editor */
+  .catalog-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .ce-form{margin-bottom:22px;}
+  .ce-form-grid{display:grid;grid-template-columns:140px 1fr;gap:18px;}
+  @media (max-width:600px){ .ce-form-grid{grid-template-columns:1fr;} }
+  .ce-photo-col{text-align:center;}
+  .ce-preview{width:120px;height:120px;object-fit:cover;border-radius:4px;border:2px solid var(--brass-dim);background:#ddd0a8;}
+  .ce-actions{margin-top:10px;}
+
+  .dossier-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:14px;
+    margin-top:6px;
+  }
+  .dossier-card{
+    background:var(--paper);
+    border:1px solid var(--paper-dark);
+    border-radius:4px;
+    padding:8px;
+    color:var(--ink);
+    position:relative;
+    box-shadow:0 3px 8px rgba(0,0,0,.3);
+    transition:transform .12s ease;
+  }
+  .dossier-card:hover{transform:translateY(-2px);}
+  .dossier-photo{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:3px;display:block;background:#ddd0a8;}
+  .dossier-name{
+    font-family:var(--font-mono);
+    text-transform:uppercase;
+    font-size:.78rem;
+    text-align:center;
+    margin-top:6px;
+    font-weight:700;
+  }
+  .dossier-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px;min-height:0;}
+  .tag{
+    font-size:.62rem;
+    border:1px solid var(--brass-dim);
+    color:var(--ink-soft);
+    padding:1px 6px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .dossier-edit-actions{display:flex;gap:6px;justify-content:center;margin-top:8px;}
+
+  /* Game board specific cards */
+  .dossier-card.small{cursor:pointer;user-select:none;}
+  .dossier-card.flipped{opacity:.38;filter:grayscale(70%);}
+  .dossier-card.flipped::after{
+    content:'DESCARTADO';
+    position:absolute;
+    top:42%;left:50%;
+    transform:translate(-50%,-50%) rotate(-13deg);
+    color:var(--red-stamp);
+    border:3px solid var(--red-stamp);
+    padding:2px 6px;
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:1px;
+    font-size:.62rem;
+    background:rgba(255,255,255,.65);
+    border-radius:2px;
+  }
+
+  /* Lobby */
+  .lobby-panel{max-width:520px;margin:0 auto;}
+  .room-code-display{display:flex;align-items:center;gap:10px;margin:6px 0 10px;}
+  .room-code{font-size:1.8rem;letter-spacing:4px;background:#2c3644;color:var(--brass);padding:6px 14px;border-radius:4px;}
+  .player-list{margin:10px 0;}
+  .player-list li{padding:6px 0;border-bottom:1px dashed var(--paper-dark);}
+  .player-list li.offline{opacity:.5;}
+  .badge{font-size:.65rem;background:var(--brass-dim);color:#fff8e6;padding:2px 6px;border-radius:3px;margin-left:6px;}
+  .badge.muted{background:#999;}
+
+  /* Game screen */
+  .game-topbar{align-items:center;}
+  .roomtag{color:#b9ac8c;font-size:.6em;margin-left:8px;}
+  .turn-indicator{
+    font-family:var(--font-display);
+    letter-spacing:1px;
+    padding:6px 14px;
+    border-radius:20px;
+    background:#2c3644;
+    border:1px solid var(--brass-dim);
+    color:#cfc4a6;
+    font-size:.85rem;
+  }
+  .turn-indicator.my-turn{background:var(--brass);color:#1c1608;border-color:var(--brass);}
+
+  .players-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .player-chip{
+    display:flex;align-items:center;gap:6px;
+    background:#232e3c;border:1px solid #33404f;
+    padding:5px 10px;border-radius:20px;font-size:.82rem;
+  }
+  .player-chip.active{border-color:var(--brass);color:var(--brass);}
+  .player-chip.dead{opacity:.4;text-decoration:line-through;}
+  .player-chip.me{font-weight:700;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .dot.on{background:var(--green-ok);}
+  .dot.off{background:#888;}
+
+  .my-secret-panel{
+    display:flex;align-items:center;gap:10px;
+    background:#232e3c;border:1px solid var(--brass-dim);
+    border-radius:6px;padding:8px 12px;margin-bottom:16px;
+  }
+  .my-secret-photo{width:44px;height:44px;object-fit:cover;border-radius:4px;}
+  .my-secret-name{font-family:var(--font-display);letter-spacing:1px;color:var(--brass);}
+
+  .opponent-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .tab-btn{
+    background:#2c3644;color:var(--cream-text);
+    border:1px solid #3d4b5c;
+    border-bottom:none;
+    padding:8px 16px;
+    border-radius:8px 8px 0 0;
+    font-size:.85rem;
+  }
+  .tab-btn.active{background:var(--paper);color:var(--ink);font-weight:700;}
+  .tab-btn.dead{opacity:.45;}
+
+  .game-grid{margin-bottom:18px;}
+
+  .action-panel{margin-bottom:20px;}
+  .action-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  @media (max-width:640px){ .action-cols{grid-template-columns:1fr;} }
+  .action-col select, .action-col input{margin-bottom:8px;}
+  .question-text{font-style:italic;margin:8px 0;font-size:1.05rem;}
+
+  .log-panel{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:6px;
+    border:1px solid var(--paper-dark);
+    padding:16px;
+  }
+  .log-title{color:var(--ink-soft);margin-bottom:8px;letter-spacing:1px;}
+  .log-scroll{max-height:220px;overflow-y:auto;padding-right:4px;}
+  .log-line{font-family:var(--font-mono);font-size:.85rem;padding:4px 0;border-bottom:1px dotted #d8c99a;}
+  .log-line.system{color:var(--brass-dim);font-weight:700;}
+  .log-line b.ok{color:var(--green-ok);}
+  .log-line b.no{color:var(--red-no);}
+
+  .end-panel{max-width:640px;text-align:center;}
+  .winner-text{font-family:var(--font-display);font-size:1.4rem;color:var(--red-stamp);margin:10px 0 16px;}
+
+  .setup-panel{max-width:600px;}
+  .setup-steps{margin:12px 0;}
+  .setup-steps li{margin-bottom:8px;}
+  code{background:#e2d3a8;padding:1px 5px;border-radius:3px;font-family:var(--font-mono);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- SDK do Firebase (necessário apenas para o modo online) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+/* =========================================================================
+   CONFIGURAÇÃO DO FIREBASE
+   -------------------------------------------------------------------------
+   Para o jogo funcionar online entre vários jogadores, ele precisa de um
+   banco de dados em tempo real gratuito. Siga o README.md que acompanha
+   este arquivo (ou os passos abaixo) para gerar sua própria configuração:
+
+   1. Acesse https://console.firebase.google.com e crie um projeto grátis.
+   2. No menu lateral, abra "Realtime Database" > "Criar banco de dados"
+      e inicie em "modo de teste".
+   3. Vá em "Configurações do projeto" (ícone de engrenagem) > "Seus apps"
+      > clique no ícone </> para criar um app da Web.
+   4. Copie o objeto firebaseConfig gerado e cole-o substituindo o objeto
+      abaixo.
+   5. Salve este arquivo e recarregue a página.
+========================================================================= */
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAPq7aTo1c9kcxxF51aGxNX2EheJREnPGo",
+  authDomain: "cara-cara-espectral.firebaseapp.com",
+  projectId: "cara-cara-espectral",
+  storageBucket: "cara-cara-espectral.firebasestorage.app",
+  messagingSenderId: "803994738073",
+  appId: "1:803994738073:web:b64f4fc952756ed1974708",
+  measurementId: "G-XPKSQZMN57"
+};
+
+let db = null;
+let firebaseReady = false;
+try {
+  if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("COLE_AQUI")) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    firebaseReady = true;
+  }
+} catch (e) {
+  console.error("Erro ao iniciar Firebase:", e);
+  firebaseReady = false;
+}
+
+/* =========================================================================
+   UTILITÁRIOS
+========================================================================= */
+function uid(len){
+  len = len || 8;
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s = '';
+  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function hashStr(str){
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const TRANSPARENT_PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7';
+
+function sessionGet(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
+function sessionSet(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} }
+
+/* =========================================================================
+   GERAÇÃO DE AVATARES E CATÁLOGO PADRÃO
+========================================================================= */
+const SKIN_TONES = ['#f2c49b','#e3ac7d','#c98a5a','#a06a3c','#7a4a28'];
+const HAIR_COLORS = {loiro:'#dfc06a', castanho:'#6e4a2c', preto:'#241d18', ruivo:'#b5541f', grisalho:'#c7c7c1'};
+const HAIR_NAMES = Object.keys(HAIR_COLORS);
+const CARD_BG = ['#e7dab6','#dbe3d2','#dcdcea','#e8d3d3','#d2e2e6','#eadfc9'];
+
+function generateAvatar(seed){
+  const rnd = mulberry32(hashStr(String(seed)));
+  const skin = SKIN_TONES[Math.floor(rnd() * SKIN_TONES.length)];
+  const bg = CARD_BG[Math.floor(rnd() * CARD_BG.length)];
+  const bald = rnd() < 0.18;
+  const curly = !bald && rnd() < 0.5;
+  const hairName = HAIR_NAMES[Math.floor(rnd() * HAIR_NAMES.length)];
+  const hairColor = HAIR_COLORS[hairName];
+  const glasses = rnd() < 0.38;
+  const hat = !bald && rnd() < 0.2;
+  const beard = rnd() < 0.28;
+  const mustache = !beard && rnd() < 0.22;
+  const earrings = rnd() < 0.25;
+  const freckles = rnd() < 0.22;
+  const scarf = rnd() < 0.2;
+  const smiling = rnd() < 0.6;
+
+  const tags = [];
+  if (glasses) tags.push('usa óculos');
+  if (hat) tags.push('usa chapéu');
+  if (bald) tags.push('careca'); else tags.push(curly ? 'cabelo cacheado' : 'cabelo liso');
+  if (!bald) tags.push('cabelo ' + hairName);
+  if (beard) tags.push('tem barba');
+  if (mustache) tags.push('tem bigode');
+  if (earrings) tags.push('usa brincos');
+  if (freckles) tags.push('tem sardas');
+  if (scarf) tags.push('usa cachecol');
+  tags.push(smiling ? 'sorridente' : 'expressão séria');
+
+  let hairShape = '';
+  if (!bald && !hat) {
+    if (curly) {
+      let circles = '';
+      for (let i = 0; i < 9; i++) circles += `<circle cx="${30 + i * 15 + (i % 2 === 0 ? 0 : 4)}" cy="42" r="14"/>`;
+      hairShape = `<g fill="${hairColor}">${circles}<rect x="34" y="30" width="132" height="40" rx="20"/></g>`;
+    } else {
+      hairShape = `<path d="M32 70 Q30 20 100 18 Q170 20 168 70 L168 50 Q100 30 32 50 Z" fill="${hairColor}"/>`;
+    }
+  }
+  const hatShape = hat ? `<g><path d="M28 62 Q30 18 100 16 Q170 18 172 62 L172 68 L28 68 Z" fill="#3a4552"/><rect x="20" y="60" width="160" height="14" rx="6" fill="#2b333d"/></g>` : '';
+  const beardShape = beard ? `<path d="M55 118 Q60 165 100 168 Q140 165 145 118 L140 140 Q100 158 60 140 Z" fill="${hairColor}"/>` : '';
+  const mustacheShape = mustache ? `<rect x="78" y="118" width="44" height="10" rx="5" fill="${hairColor}"/>` : '';
+  const glassesShape = glasses ? `<g stroke="#2b2118" stroke-width="4" fill="rgba(255,255,255,0.15)"><circle cx="75" cy="100" r="17"/><circle cx="125" cy="100" r="17"/><line x1="92" y1="100" x2="108" y2="100"/><line x1="58" y1="98" x2="45" y2="94"/><line x1="142" y1="98" x2="155" y2="94"/></g>` : '';
+  const earringShape = earrings ? `<circle cx="45" cy="112" r="4" fill="#c8a13a"/><circle cx="155" cy="112" r="4" fill="#c8a13a"/>` : '';
+  const frecklesShape = freckles ? `<g fill="rgba(120,70,40,0.5)"><circle cx="68" cy="112" r="1.6"/><circle cx="75" cy="116" r="1.6"/><circle cx="82" cy="110" r="1.6"/><circle cx="118" cy="110" r="1.6"/><circle cx="125" cy="116" r="1.6"/><circle cx="132" cy="112" r="1.6"/></g>` : '';
+  const scarfShape = scarf ? `<rect x="45" y="150" width="110" height="22" rx="8" fill="#a8371f"/>` : '';
+  const mouth = smiling
+    ? `<path d="M78 128 Q100 145 122 128" stroke="#5b2f22" stroke-width="4" fill="none" stroke-linecap="round"/>`
+    : `<rect x="82" y="128" width="36" height="5" rx="2.5" fill="#5b2f22"/>`;
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <rect width="200" height="200" fill="${bg}"/>
+    <ellipse cx="100" cy="115" rx="58" ry="66" fill="${skin}"/>
+    <circle cx="45" cy="118" r="10" fill="${skin}"/>
+    <circle cx="155" cy="118" r="10" fill="${skin}"/>
+    ${earringShape}
+    ${beardShape}
+    <ellipse cx="72" cy="98" rx="6" ry="8" fill="#2b2118"/>
+    <ellipse cx="128" cy="98" rx="6" ry="8" fill="#2b2118"/>
+    <path d="M58 82 Q72 72 86 82" stroke="#2b2118" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M114 82 Q128 72 142 82" stroke="#2b2118" stroke-width="3" fill="none" stroke-linecap="round"/>
+    ${frecklesShape}
+    ${mouth}
+    ${mustacheShape}
+    ${glassesShape}
+    ${scarfShape}
+    ${hairShape}
+    ${hatShape}
+  </svg>`;
+
+  return { photo: 'data:image/svg+xml;utf8,' + encodeURIComponent(svg), tags };
+}
+
+const DEFAULT_NAMES = ['Ana','Bruno','Carla','Diego','Elisa','Fábio','Gabriela','Hugo','Isabela','João','Karla','Lucas','Marina','Nando','Olívia','Pedro','Quésia','Rafael','Sofia','Tiago','Umberto','Vitória','Wagner','Yasmin'];
+function buildDefaultCatalog(){
+  return DEFAULT_NAMES.map((name, i) => {
+    const av = generateAvatar(name + '-' + i);
+    return { id: 'd' + i, name, photo: av.photo, tags: av.tags };
+  });
+}
+
+/* =========================================================================
+   IMAGEM: redimensionar upload do usuário
+========================================================================= */
+function resizeImage(file, maxDim, quality){
+  maxDim = maxDim || 220; quality = quality || 0.75;
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > h) { if (w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; } }
+        else { if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; } }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function saveCatalogLocal(){ try { sessionStorage.setItem('cc_catalog', JSON.stringify(local.catalog)); } catch(e){} }
+function loadCatalogLocal(){ try { const raw = sessionStorage.getItem('cc_catalog'); if (raw) return JSON.parse(raw); } catch(e){} return null; }
+
+/* =========================================================================
+   ESTADO DA APLICAÇÃO
+========================================================================= */
+const local = {
+  screen: firebaseReady ? 'home' : 'setup',
+  myId: sessionGet('cc_myid') || uid(8),
+  myName: sessionGet('cc_myname') || '',
+  roomCode: sessionGet('cc_room') || '',
+  catalog: loadCatalogLocal() || buildDefaultCatalog(),
+  ce: { name: '', tags: '', photo: null, editingId: null },
+  ceImportError: '',
+  createError: '',
+  joinError: '',
+  startError: '',
+  selectedOpponent: null,
+  localFlips: {}
+};
+sessionSet('cc_myid', local.myId);
+
+let room = null;
+let roomRef = null;
+
+/* =========================================================================
+   RENDERIZAÇÃO (com preservação de foco em inputs)
+========================================================================= */
+const screens = { setup: renderSetup, home: renderHome, catalog: renderCatalogEditor, lobby: renderLobby, game: renderGame, end: renderEnd };
+
+function update(){
+  const ae = document.activeElement;
+  let savedId = null, savedVal = null, savedStart = null, savedEnd = null;
+  if (ae && ae.id && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
+    savedId = ae.id; savedVal = ae.value;
+    try { savedStart = ae.selectionStart; savedEnd = ae.selectionEnd; } catch(e){}
+  }
+  document.getElementById('app').innerHTML = (screens[local.screen] || renderHome)();
+  if (savedId) {
+    const el = document.getElementById(savedId);
+    if (el) {
+      el.value = savedVal;
+      el.focus();
+      if (savedStart != null) { try { el.setSelectionRange(savedStart, savedEnd); } catch(e){} }
+    }
+  }
+}
+
+/* =========================================================================
+   NAVEGAÇÃO
+========================================================================= */
+function goHome(){
+  if (roomRef) { roomRef.off(); roomRef = null; }
+  room = null;
+  local.roomCode = '';
+  sessionSet('cc_room', '');
+  local.screen = 'home';
+  update();
+}
+function openCatalogEditor(){
+  local.ce = { name: '', tags: '', photo: null, editingId: null };
+  local.ceImportError = '';
+  local.screen = 'catalog';
+  update();
+}
+
+/* =========================================================================
+   EDITOR DE CATÁLOGO
+========================================================================= */
+function ceEdit(id){
+  const c = local.catalog.find(x => x.id === id);
+  if (!c) return;
+  local.ce = { name: c.name, tags: (c.tags || []).join(', '), photo: c.photo, editingId: id };
+  update();
+}
+function ceCancel(){
+  local.ce = { name: '', tags: '', photo: null, editingId: null };
+  update();
+}
+function cePhotoChange(input){
+  const file = input.files && input.files[0];
+  if (!file) return;
+  resizeImage(file, 220, 0.75).then(dataUrl => {
+    local.ce.photo = dataUrl;
+    const prev = document.getElementById('ce-preview');
+    if (prev) prev.src = dataUrl;
+  });
+}
+function ceSave(){
+  const nameEl = document.getElementById('ce-name');
+  const tagsEl = document.getElementById('ce-tags');
+  const name = (nameEl.value || '').trim();
+  if (!name) return;
+  const tags = (tagsEl.value || '').split(',').map(s => s.trim()).filter(Boolean);
+  let photo = local.ce.photo;
+  if (!photo) photo = generateAvatar(name + Date.now()).photo;
+  if (local.ce.editingId) {
+    const c = local.catalog.find(x => x.id === local.ce.editingId);
+    if (c) { c.name = name; c.tags = tags; c.photo = photo; }
+  } else {
+    local.catalog.push({ id: 'u' + uid(6), name, tags, photo });
+  }
+  local.ce = { name: '', tags: '', photo: null, editingId: null };
+  saveCatalogLocal();
+  update();
+}
+function ceDelete(id){
+  local.catalog = local.catalog.filter(c => c.id !== id);
+  saveCatalogLocal();
+  update();
+}
+function ceResetDefault(){
+  local.catalog = buildDefaultCatalog();
+  saveCatalogLocal();
+  update();
+}
+function ceExport(){
+  const blob = new Blob([JSON.stringify(local.catalog, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'catalogo-cara-a-cara.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+function ceImport(input){
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) throw new Error('formato inválido');
+      const clean = data.filter(c => c && c.name && c.photo).map(c => ({
+        id: c.id || ('u' + uid(6)),
+        name: String(c.name),
+        photo: String(c.photo),
+        tags: Array.isArray(c.tags) ? c.tags.map(String) : []
+      }));
+      if (clean.length === 0) throw new Error('nenhum personagem válido encontrado');
+      local.catalog = clean;
+      saveCatalogLocal();
+      local.ceImportError = '';
+    } catch(err) {
+      local.ceImportError = 'Não foi possível importar: ' + err.message;
+    }
+    update();
+  };
+  reader.readAsText(file);
+}
+
+/* =========================================================================
+   SALA / MULTIPLAYER
+========================================================================= */
+function attachRoom(code){
+  if (roomRef) roomRef.off();
+  roomRef = db.ref('rooms/' + code);
+  roomRef.on('value', snap => {
+    room = snap.val();
+    if (room) {
+      local.screen = room.phase === 'playing' ? 'game' : (room.phase === 'ended' ? 'end' : 'lobby');
+    }
+    update();
+  });
+}
+function generateUniqueCode(tries){
+  tries = tries == null ? 5 : tries;
+  const code = uid(5);
+  return db.ref('rooms/' + code).get().then(snap => (snap.exists() && tries > 0) ? generateUniqueCode(tries - 1) : code);
+}
+function createRoom(){
+  const nameEl = document.getElementById('create-name');
+  const name = (nameEl.value || '').trim();
+  local.createError = '';
+  if (!name) { local.createError = 'Digite seu nome.'; update(); return; }
+  if (!firebaseReady) { local.createError = 'Configure o Firebase primeiro (veja o README).'; update(); return; }
+  if (local.catalog.length < 4) { local.createError = 'Seu catálogo precisa ter pelo menos 4 personagens.'; update(); return; }
+  generateUniqueCode().then(code => {
+    local.myName = name; sessionSet('cc_myname', name);
+    local.roomCode = code; sessionSet('cc_room', code);
+    const roomData = {
+      hostId: local.myId,
+      phase: 'lobby',
+      catalog: local.catalog,
+      players: { [local.myId]: { name, alive: true, connected: true, secretId: null } },
+      joinOrder: [local.myId],
+      turnOrder: null,
+      currentTurn: null,
+      awaiting: null,
+      log: null,
+      winner: null,
+      createdAt: Date.now()
+    };
+    return db.ref('rooms/' + code).set(roomData).then(() => {
+      attachRoom(code);
+      db.ref('rooms/' + code + '/players/' + local.myId + '/connected').onDisconnect().set(false);
+    });
+  }).catch(err => { local.createError = 'Erro ao criar sala: ' + err.message; update(); });
+}
+function joinRoom(){
+  const codeEl = document.getElementById('join-code');
+  const nameEl = document.getElementById('join-name');
+  const code = (codeEl.value || '').trim().toUpperCase();
+  const name = (nameEl.value || '').trim();
+  local.joinError = '';
+  if (!code || !name) { local.joinError = 'Preencha o código da sala e seu nome.'; update(); return; }
+  if (!firebaseReady) { local.joinError = 'Configure o Firebase primeiro (veja o README).'; update(); return; }
+  const ref = db.ref('rooms/' + code);
+  ref.get().then(snap => {
+    if (!snap.exists()) { local.joinError = 'Sala não encontrada. Verifique o código.'; update(); return; }
+    const val = snap.val();
+    if (val.phase && val.phase !== 'lobby') { local.joinError = 'Esse jogo já começou. Peça ao host uma nova sala.'; update(); return; }
+    const players = val.players || {};
+    if (!players[local.myId] && Object.keys(players).length >= 6) { local.joinError = 'Sala cheia (máximo de 6 jogadores).'; update(); return; }
+    local.myName = name; sessionSet('cc_myname', name);
+    local.roomCode = code; sessionSet('cc_room', code);
+    attachRoom(code);
+    db.ref('rooms/' + code + '/players/' + local.myId).set({ name, alive: true, connected: true, secretId: null });
+    db.ref('rooms/' + code + '/players/' + local.myId + '/connected').onDisconnect().set(false);
+    db.ref('rooms/' + code + '/joinOrder').transaction(cur => {
+      cur = cur || [];
+      if (!cur.includes(local.myId)) cur.push(local.myId);
+      return cur;
+    });
+  }).catch(err => { local.joinError = 'Erro ao entrar: ' + err.message; update(); });
+}
+function copyRoomCode(){ try { navigator.clipboard.writeText(local.roomCode); } catch(e){} }
+
+/* =========================================================================
+   LÓGICA DA PARTIDA
+========================================================================= */
+function nextAliveAfter(turnOrder, players, currentPid, forcedDeadId){
+  const n = turnOrder.length;
+  const idx = turnOrder.indexOf(currentPid);
+  for (let step = 1; step <= n; step++) {
+    const cand = turnOrder[(idx + step) % n];
+    if (cand === forcedDeadId) continue;
+    const p = players[cand];
+    if (p && p.alive !== false) return cand;
+  }
+  return currentPid;
+}
+function startGame(){
+  if (!room || room.hostId !== local.myId) return;
+  const joinOrder = room.joinOrder || [];
+  const players = room.players || {};
+  const activeIds = joinOrder.filter(pid => players[pid]);
+  if (activeIds.length < 2) { local.startError = 'É preciso pelo menos 2 jogadores.'; update(); return; }
+  const catalog = room.catalog || [];
+  if (catalog.length < activeIds.length) {
+    local.startError = 'O catálogo precisa ter pelo menos ' + activeIds.length + ' personagens para ' + activeIds.length + ' jogadores.';
+    update(); return;
+  }
+  local.startError = '';
+  const pool = catalog.map(c => c.id);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const updates = { phase: 'playing', turnOrder: activeIds, currentTurn: activeIds[0], awaiting: null, log: null, winner: null };
+  activeIds.forEach((pid, i) => { updates['players/' + pid + '/secretId'] = pool[i]; updates['players/' + pid + '/alive'] = true; });
+  db.ref('rooms/' + local.roomCode).update(updates).then(() => {
+    db.ref('rooms/' + local.roomCode + '/log').push({ type: 'system', text: 'A partida começou! ' + activeIds.length + ' detetives em campo.', ts: Date.now() });
+  });
+}
+function selectOpponent(pid){ local.selectedOpponent = pid; update(); }
+function toggleFlip(charId){
+  const opp = local.selectedOpponent;
+  if (!opp) return;
+  if (!local.localFlips[opp]) local.localFlips[opp] = new Set();
+  const set = local.localFlips[opp];
+  if (set.has(charId)) set.delete(charId); else set.add(charId);
+  update();
+}
+function askQuestion(){
+  if (!room || room.currentTurn !== local.myId || room.awaiting) return;
+  const targetSel = document.getElementById('ask-target');
+  const textEl = document.getElementById('ask-text');
+  const targetId = targetSel.value;
+  const text = (textEl.value || '').trim();
+  if (!targetId || !text) return;
+  const logRef = db.ref('rooms/' + local.roomCode + '/log').push();
+  logRef.set({ type: 'question', from: local.myId, to: targetId, text, answered: false, ts: Date.now() }).then(() => {
+    db.ref('rooms/' + local.roomCode + '/awaiting').set({ logKey: logRef.key, from: local.myId, to: targetId });
+  });
+}
+function answerQuestion(ans){
+  if (!room || !room.awaiting || room.awaiting.to !== local.myId) return;
+  const logKey = room.awaiting.logKey;
+  const nextTurn = nextAliveAfter(room.turnOrder, room.players, room.currentTurn, null);
+  const updates = {};
+  updates['log/' + logKey + '/answer'] = ans;
+  updates['log/' + logKey + '/answered'] = true;
+  updates['awaiting'] = null;
+  updates['currentTurn'] = nextTurn;
+  db.ref('rooms/' + local.roomCode).update(updates);
+}
+function submitGuess(){
+  if (!room || room.currentTurn !== local.myId || room.awaiting) return;
+  const targetSel = document.getElementById('guess-target');
+  const charSel = document.getElementById('guess-char');
+  const targetId = targetSel.value;
+  const charId = charSel.value;
+  if (!targetId || !charId) return;
+  const targetPlayer = room.players[targetId];
+  const correct = targetPlayer.secretId === charId;
+  const logRef = db.ref('rooms/' + local.roomCode + '/log').push();
+  const updates = {};
+  updates['log/' + logRef.key] = { type: 'guess', from: local.myId, to: targetId, characterId: charId, correct, ts: Date.now() };
+  let winnerId = null;
+  if (correct) {
+    updates['players/' + targetId + '/alive'] = false;
+    const aliveLeft = room.turnOrder.filter(pid => pid === targetId ? false : (room.players[pid].alive !== false));
+    if (aliveLeft.length === 1) {
+      winnerId = aliveLeft[0];
+      updates['phase'] = 'ended';
+      updates['winner'] = winnerId;
+      updates['awaiting'] = null;
+    }
+  }
+  if (!winnerId) {
+    updates['currentTurn'] = nextAliveAfter(room.turnOrder, room.players, room.currentTurn, correct ? targetId : null);
+    updates['awaiting'] = null;
+  }
+  db.ref('rooms/' + local.roomCode).update(updates);
+}
+
+/* =========================================================================
+   TEMPLATES / TELAS
+========================================================================= */
+function renderSetup(){
+  return `
+  <div class="center-wrap">
+    <div class="paper-panel setup-panel">
+      <h1 class="brand">CARA A CARA <span>ONLINE</span></h1>
+      <p class="mono small" style="margin-top:10px;">CONFIGURAÇÃO NECESSÁRIA</p>
+      <p style="margin-top:10px;">Para jogar online, este jogo precisa de um banco de dados gratuito (Firebase) para sincronizar as salas entre os jogadores.</p>
+      <ol class="setup-steps">
+        <li>Acesse <b>console.firebase.google.com</b> e crie um projeto grátis.</li>
+        <li>No menu lateral, abra <b>Realtime Database</b> → <b>Criar banco de dados</b> → inicie em <b>modo de teste</b>.</li>
+        <li>Vá em <b>Configurações do projeto</b> (ícone de engrenagem) → "Seus apps" → clique no ícone <b>&lt;/&gt;</b> para criar um app da Web.</li>
+        <li>Copie o objeto <code>firebaseConfig</code> gerado.</li>
+        <li>Abra o arquivo <code>index.html</code> deste jogo em um editor de texto e cole os valores na constante <code>firebaseConfig</code>, perto do início do &lt;script&gt;.</li>
+        <li>Salve o arquivo e recarregue esta página.</li>
+      </ol>
+      <p class="mono small">Dica: nas regras do Realtime Database, use <code>{"rules": {".read": true, ".write": true}}</code> para jogar com amigos rapidamente (não recomendado para deixar público na internet por muito tempo).</p>
+      <p class="mono small">Detalhes completos no arquivo README.md.</p>
+    </div>
+  </div>`;
+}
+
+function renderHome(){
+  return `
+  <div class="wrap">
+    <header class="topbar">
+      <div>
+        <h1 class="brand">CARA A CARA <span>ONLINE</span></h1>
+        <p class="subtitle">Um jogo de dedução para 2 a 6 detetives</p>
+      </div>
+    </header>
+    <div class="home-grid">
+      <div class="paper-panel">
+        <h2 class="panel-title">Criar uma sala</h2>
+        <p class="hint">Catálogo atual: <b>${local.catalog.length} personagens</b> · <a href="#" onclick="openCatalogEditor();return false;">editar catálogo</a></p>
+        <label class="field-label">Seu nome</label>
+        <input id="create-name" class="text-input" type="text" maxlength="20" placeholder="Ex: Ana" value="${esc(local.myName)}">
+        ${local.createError ? `<p class="error-text">${esc(local.createError)}</p>` : ''}
+        <button class="btn btn-primary" onclick="createRoom()">Criar sala</button>
+      </div>
+      <div class="paper-panel">
+        <h2 class="panel-title">Entrar em uma sala</h2>
+        <label class="field-label">Código da sala</label>
+        <input id="join-code" class="text-input mono" type="text" maxlength="6" placeholder="Ex: X7K2P" value="${esc(local.roomCode)}" style="text-transform:uppercase">
+        <label class="field-label">Seu nome</label>
+        <input id="join-name" class="text-input" type="text" maxlength="20" placeholder="Ex: Bruno" value="${esc(local.myName)}">
+        ${local.joinError ? `<p class="error-text">${esc(local.joinError)}</p>` : ''}
+        <button class="btn btn-secondary" onclick="joinRoom()">Entrar na sala</button>
+      </div>
+    </div>
+    <details class="how-to">
+      <summary>Como jogar</summary>
+      <ol>
+        <li>Cada jogador entra na mesma sala usando o código gerado pelo anfitrião (host).</li>
+        <li>Ao iniciar, cada jogador recebe em segredo um personagem do catálogo.</li>
+        <li>Na sua vez, escolha um oponente e faça uma pergunta de sim/não sobre o personagem secreto dele (ex: "seu personagem usa óculos?"), ou arrisque um chute dizendo quem é o personagem.</li>
+        <li>Use o quadro de suspeitos para marcar (clicar) quem você já descartou — essa marcação é só sua, os outros jogadores não veem.</li>
+        <li>Acertar um chute elimina o oponente da partida. O último detetive restante vence!</li>
+      </ol>
+    </details>
+    <footer class="mono small footnote">Cada jogador precisa abrir este mesmo site pelo seu próprio celular ou computador.</footer>
+  </div>`;
+}
+
+function renderCatalogEditor(){
+  const c = local.ce;
+  return `
+  <div class="wrap">
+    <header class="topbar">
+      <button class="btn btn-ghost" onclick="goHome()">&larr; Voltar</button>
+      <h1 class="brand small-brand">CATÁLOGO DE SUSPEITOS</h1>
+    </header>
+    <div class="catalog-toolbar">
+      <button class="btn btn-secondary" onclick="ceExport()">Exportar catálogo</button>
+      <label class="btn btn-secondary file-btn">Importar catálogo<input type="file" accept="application/json" onchange="ceImport(this)" hidden></label>
+      <button class="btn btn-danger" onclick="ceResetDefault()">Restaurar padrão</button>
+    </div>
+    ${local.ceImportError ? `<p class="error-text">${esc(local.ceImportError)}</p>` : ''}
+    <div class="ce-form paper-panel">
+      <h2 class="panel-title">${c.editingId ? 'Editar suspeito' : 'Novo suspeito'}</h2>
+      <div class="ce-form-grid">
+        <div class="ce-photo-col">
+          <img id="ce-preview" class="ce-preview" src="${c.photo || TRANSPARENT_PX}" alt="Prévia">
+          <label class="btn btn-secondary file-btn small">Enviar foto<input type="file" accept="image/*" onchange="cePhotoChange(this)" hidden></label>
+        </div>
+        <div class="ce-fields-col">
+          <label class="field-label">Nome</label>
+          <input id="ce-name" class="text-input" type="text" maxlength="24" value="${esc(c.name)}" placeholder="Nome do suspeito">
+          <label class="field-label">Características (separadas por vírgula)</label>
+          <input id="ce-tags" class="text-input" type="text" value="${esc(c.tags)}" placeholder="usa óculos, careca, tem barba">
+          <div class="ce-actions">
+            <button class="btn btn-primary" onclick="ceSave()">${c.editingId ? 'Salvar alterações' : 'Adicionar ao catálogo'}</button>
+            ${c.editingId ? `<button class="btn btn-ghost" onclick="ceCancel()">Cancelar</button>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dossier-grid">
+      ${local.catalog.map(ch => `
+        <div class="dossier-card">
+          <img src="${ch.photo}" class="dossier-photo" alt="${esc(ch.name)}">
+          <div class="dossier-name">${esc(ch.name)}</div>
+          <div class="dossier-tags">${(ch.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+          <div class="dossier-edit-actions">
+            <button class="btn btn-ghost tiny" onclick="ceEdit('${ch.id}')">Editar</button>
+            <button class="btn btn-danger tiny" onclick="ceDelete('${ch.id}')">Excluir</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function renderRoomLost(){
+  return `
+  <div class="center-wrap">
+    <div class="paper-panel">
+      <h2 class="panel-title">Sala não encontrada</h2>
+      <p>Essa sala foi encerrada ou não existe mais.</p>
+      <button class="btn btn-primary" onclick="goHome()">Voltar ao início</button>
+    </div>
+  </div>`;
+}
+
+function renderLobby(){
+  if (!room) return renderRoomLost();
+  const players = (room.joinOrder || []).map(pid => ({ pid, ...(room.players[pid] || {}) }));
+  const isHost = room.hostId === local.myId;
+  return `
+  <div class="wrap">
+    <header class="topbar"><h1 class="brand small-brand">SALA DE ESPERA</h1></header>
+    <div class="paper-panel lobby-panel">
+      <p class="hint">Código da sala</p>
+      <div class="room-code-display">
+        <span class="mono room-code">${esc(local.roomCode)}</span>
+        <button class="btn btn-ghost tiny" onclick="copyRoomCode()">Copiar</button>
+      </div>
+      <p class="hint">Compartilhe este código com seus amigos. Eles precisam abrir este mesmo site e clicar em "Entrar em uma sala".</p>
+      <p class="hint">Catálogo desta partida: ${(room.catalog || []).length} personagens</p>
+      <h2 class="panel-title">Detetives na sala (${players.length}/6)</h2>
+      <ul class="player-list">
+        ${players.map(p => `<li class="${p.connected === false ? 'offline' : ''}">${esc(p.name)}${p.pid === room.hostId ? '<span class="badge">HOST</span>' : ''}${p.connected === false ? '<span class="badge muted">desconectado</span>' : ''}</li>`).join('')}
+      </ul>
+      ${local.startError ? `<p class="error-text">${esc(local.startError)}</p>` : ''}
+      ${isHost
+        ? `<button class="btn btn-primary" ${players.length < 2 ? 'disabled' : ''} onclick="startGame()">Iniciar jogo</button>`
+        : `<p class="mono small">Aguardando o host iniciar a partida...</p>`}
+      <button class="btn btn-ghost" onclick="goHome()">Sair da sala</button>
+    </div>
+  </div>`;
+}
+
+function renderLogEntry(e){
+  if (e.type === 'system') return `<p class="log-line system">» ${esc(e.text)}</p>`;
+  const fromName = esc((room.players[e.from] || {}).name || '?');
+  const toName = esc((room.players[e.to] || {}).name || '?');
+  if (e.type === 'question') {
+    if (!e.answered) return `<p class="log-line">${fromName} perguntou a ${toName}: "${esc(e.text)}" <span class="dim">(aguardando resposta)</span></p>`;
+    return `<p class="log-line">${fromName} perguntou a ${toName}: "${esc(e.text)}" — <b class="${e.answer ? 'ok' : 'no'}">${e.answer ? 'SIM' : 'NÃO'}</b></p>`;
+  }
+  if (e.type === 'guess') {
+    const catalog = room.catalog || [];
+    const charName = esc((catalog.find(c => c.id === e.characterId) || {}).name || '???');
+    return `<p class="log-line">${fromName} chutou que ${toName} é <b>${charName}</b> — <b class="${e.correct ? 'ok' : 'no'}">${e.correct ? 'ACERTOU!' : 'ERROU'}</b></p>`;
+  }
+  return '';
+}
+
+function renderActionPanel(isMyTurn, awaiting, iAmAnswering, aliveOpponents, catalog){
+  if (iAmAnswering) {
+    const q = room.log[awaiting.logKey];
+    return `
+      <p class="mono small">${esc((room.players[awaiting.from] || {}).name || '?')} pergunta:</p>
+      <p class="question-text">"${esc(q.text)}"</p>
+      <div class="ce-actions">
+        <button class="btn btn-primary" onclick="answerQuestion(true)">Sim</button>
+        <button class="btn btn-danger" onclick="answerQuestion(false)">Não</button>
+      </div>`;
+  }
+  if (!isMyTurn) {
+    if (awaiting) return `<p class="mono small dim">Aguardando ${esc((room.players[awaiting.to] || {}).name || '?')} responder...</p>`;
+    return `<p class="mono small dim">Aguarde sua vez. Use o quadro acima para marcar seus palpites.</p>`;
+  }
+  if (aliveOpponents.length === 0) return `<p class="mono small dim">Não há oponentes disponíveis.</p>`;
+  return `
+    <div class="action-cols">
+      <div class="action-col">
+        <h4 class="panel-title small">Fazer uma pergunta</h4>
+        <select id="ask-target" class="text-input">${aliveOpponents.map(o => `<option value="${o.pid}">${esc(o.name)}</option>`).join('')}</select>
+        <input id="ask-text" class="text-input" type="text" maxlength="120" placeholder="Ex: seu personagem usa óculos?">
+        <button class="btn btn-secondary" onclick="askQuestion()">Perguntar</button>
+      </div>
+      <div class="action-col">
+        <h4 class="panel-title small">Fazer o chute final</h4>
+        <select id="guess-target" class="text-input">${aliveOpponents.map(o => `<option value="${o.pid}">${esc(o.name)}</option>`).join('')}</select>
+        <select id="guess-char" class="text-input">${catalog.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+        <button class="btn btn-primary" onclick="submitGuess()">Chutar!</button>
+      </div>
+    </div>`;
+}
+
+function renderGame(){
+  if (!room) return renderRoomLost();
+  const catalog = room.catalog || [];
+  const players = (room.turnOrder || []).map(pid => ({ pid, ...(room.players[pid] || {}) }));
+  const me = room.players[local.myId] || {};
+  const myChar = catalog.find(c => c.id === me.secretId);
+  const opponents = players.filter(p => p.pid !== local.myId);
+
+  if (!local.selectedOpponent || !opponents.find(o => o.pid === local.selectedOpponent)) {
+    const firstAlive = opponents.find(o => o.alive !== false);
+    local.selectedOpponent = firstAlive ? firstAlive.pid : (opponents[0] && opponents[0].pid);
+  }
+
+  const isMyTurn = room.currentTurn === local.myId;
+  const awaiting = room.awaiting;
+  const iAmAnswering = !!(awaiting && awaiting.to === local.myId);
+  const myFlips = local.localFlips[local.selectedOpponent] || new Set();
+  const aliveOpponents = opponents.filter(o => o.alive !== false);
+  const logEntries = room.log ? Object.entries(room.log).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0)) : [];
+
+  return `
+  <div class="wrap game-wrap">
+    <header class="topbar game-topbar">
+      <h1 class="brand small-brand">CARA A CARA <span class="mono roomtag">#${esc(local.roomCode)}</span></h1>
+      <div class="turn-indicator ${isMyTurn ? 'my-turn' : ''}">${isMyTurn ? 'SUA VEZ' : 'VEZ DE ' + esc((room.players[room.currentTurn] || {}).name || '?')}</div>
+    </header>
+
+    <div class="players-strip">
+      ${players.map(p => `
+        <div class="player-chip ${p.pid === room.currentTurn ? 'active' : ''} ${p.alive === false ? 'dead' : ''} ${p.pid === local.myId ? 'me' : ''}">
+          <span class="dot ${p.connected === false ? 'off' : 'on'}"></span>
+          ${esc(p.name)}${p.pid === local.myId ? ' (você)' : ''}${p.alive === false ? ' ☠' : ''}
+        </div>`).join('')}
+    </div>
+
+    ${myChar ? `
+    <div class="my-secret-panel">
+      <span class="mono small">SEU PERSONAGEM SECRETO:</span>
+      <img src="${myChar.photo}" class="my-secret-photo" alt="${esc(myChar.name)}">
+      <span class="my-secret-name">${esc(myChar.name)}</span>
+    </div>` : ''}
+
+    <div class="opponent-tabs">
+      ${opponents.map(o => `<button class="tab-btn ${o.pid === local.selectedOpponent ? 'active' : ''} ${o.alive === false ? 'dead' : ''}" onclick="selectOpponent('${o.pid}')">${esc(o.name)}${o.alive === false ? ' ☠' : ''}</button>`).join('')}
+    </div>
+
+    <div class="dossier-grid game-grid">
+      ${catalog.map(ch => `
+        <div class="dossier-card small ${myFlips.has(ch.id) ? 'flipped' : ''}" onclick="toggleFlip('${ch.id}')">
+          <img src="${ch.photo}" class="dossier-photo" alt="${esc(ch.name)}">
+          <div class="dossier-name">${esc(ch.name)}</div>
+          <div class="dossier-tags">${(ch.tags || []).slice(0, 3).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="action-panel paper-panel">
+      ${renderActionPanel(isMyTurn, awaiting, iAmAnswering, aliveOpponents, catalog)}
+    </div>
+
+    <div class="log-panel">
+      <h3 class="mono small log-title">CADERNO DE INTERROGATÓRIO</h3>
+      <div class="log-scroll">
+        ${logEntries.length === 0 ? `<p class="mono small dim">Nenhum evento ainda.</p>` : logEntries.map(([key, e]) => renderLogEntry(e)).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderEnd(){
+  if (!room) return renderRoomLost();
+  const catalog = room.catalog || [];
+  const winner = room.players[room.winner] || {};
+  const isHost = room.hostId === local.myId;
+  const all = (room.turnOrder || Object.keys(room.players || {})).map(pid => ({ pid, ...(room.players[pid] || {}) }));
+  return `
+  <div class="center-wrap">
+    <div class="paper-panel end-panel">
+      <h1 class="brand">CASO ENCERRADO</h1>
+      <p class="winner-text">🏆 ${esc(winner.name || '?')} venceu a partida!</p>
+      <h2 class="panel-title">Revelação dos suspeitos</h2>
+      <div class="dossier-grid">
+        ${all.map(p => {
+          const c = catalog.find(x => x.id === p.secretId);
+          return `<div class="dossier-card small">
+            <img src="${c ? c.photo : TRANSPARENT_PX}" class="dossier-photo" alt="">
+            <div class="dossier-name">${esc(p.name)}</div>
+            <div class="dossier-tags"><span class="tag">era ${esc(c ? c.name : '?')}</span></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${isHost ? `<button class="btn btn-primary" onclick="startGame()">Jogar novamente</button>` : ''}
+      <button class="btn btn-ghost" onclick="goHome()">Sair para o início</button>
+    </div>
+  </div>`;
+}
+
+/* =========================================================================
+   INÍCIO
+========================================================================= */
+update();
+</script>
+</body>
+</html>
