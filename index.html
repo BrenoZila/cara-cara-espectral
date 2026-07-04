@@ -2,1104 +2,941 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cara a Cara Online</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cara a Cara — Quadro de Investigação</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  :root{
-    --bg-night:#161c25;
-    --bg-night-2:#1e2733;
-    --paper:#f3ead2;
-    --paper-dark:#e7d9b7;
-    --ink:#2b2118;
-    --ink-soft:#5b4a38;
-    --red-stamp:#a8371f;
-    --brass:#c8a13a;
-    --brass-dim:#8f7226;
-    --cream-text:#eee3c8;
-    --green-ok:#3f7a45;
-    --red-no:#a8371f;
-    --radius:6px;
-    --font-display:'Oswald', sans-serif;
-    --font-body:'Public Sans', sans-serif;
-    --font-mono:'Courier Prime', monospace;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:var(--font-body);
-    color:var(--cream-text);
-    background:
-      radial-gradient(ellipse at top, #232e3c 0%, var(--bg-night) 55%, #0f141b 100%);
-    min-height:100vh;
-    line-height:1.45;
-  }
-  h1,h2,h3,h4,p,ul,ol{margin:0;}
-  ul,ol{padding-left:1.1em;}
-  button{font-family:inherit;cursor:pointer;border:none;}
-  input,select{font-family:inherit;}
-  a{color:var(--brass);}
-  :focus-visible{outline:2px solid var(--brass);outline-offset:2px;}
-  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important;} }
+/* ========================================================
+   TOKENS — paleta e tipografia do "quadro de investigação"
+   ======================================================== */
+:root {
+  --cork: #c19a6b;
+  --cork-dark: #9c7847;
+  --folder: #f2e8d5;
+  --folder-shadow: #d8c8a4;
+  --ink: #2b2620;
+  --ink-soft: #5a4f3f;
+  --stamp-red: #a8342a;
+  --string-red: #c0392b;
+  --teal: #3f6b64;
+  --gold: #cf9d2e;
 
-  .wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
-  .center-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+  --font-display: 'Special Elite', cursive;
+  --font-mono: 'Courier Prime', monospace;
+  --font-ui: 'Archivo', sans-serif;
+}
 
-  .topbar{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:18px;}
-  .brand{
-    font-family:var(--font-display);
-    text-transform:uppercase;
-    letter-spacing:2px;
-    font-size:2rem;
-    color:var(--brass);
-    border-bottom:3px solid var(--red-stamp);
-    padding-bottom:4px;
-    display:inline-block;
-  }
-  .brand span{color:var(--cream-text);font-size:.55em;letter-spacing:4px;margin-left:6px;}
-  .small-brand{font-size:1.3rem;}
-  .subtitle{color:#b9ac8c;margin-top:4px;}
-  .mono{font-family:var(--font-mono);}
-  .small{font-size:.78rem;}
-  .dim{opacity:.6;}
-  .footnote{text-align:center;margin-top:30px;color:#8f9aa8;}
+* { box-sizing: border-box; }
 
-  .paper-panel{
-    background:var(--paper);
-    color:var(--ink);
-    border-radius:var(--radius);
-    border:1px solid var(--paper-dark);
-    box-shadow:0 8px 24px rgba(0,0,0,.45);
-    padding:20px;
-  }
-  .panel-title{
-    font-family:var(--font-display);
-    text-transform:uppercase;
-    letter-spacing:1px;
-    font-size:1.15rem;
-    color:var(--ink);
-    margin-bottom:10px;
-    border-bottom:2px solid var(--brass-dim);
-    padding-bottom:6px;
-  }
-  .panel-title.small{font-size:.95rem;margin-bottom:6px;}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  color: var(--ink);
+  background-color: var(--cork);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,0.06) 0, transparent 3%),
+    radial-gradient(circle at 60% 70%, rgba(0,0,0,0.05) 0, transparent 3%),
+    radial-gradient(circle at 80% 20%, rgba(0,0,0,0.07) 0, transparent 2%),
+    radial-gradient(circle at 40% 85%, rgba(0,0,0,0.05) 0, transparent 3%),
+    linear-gradient(160deg, var(--cork) 0%, var(--cork-dark) 100%);
+  background-size: 140px 140px, 160px 160px, 120px 120px, 150px 150px, cover;
+}
 
-  .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  @media (max-width:720px){ .home-grid{grid-template-columns:1fr;} }
+.board { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
 
-  .field-label{display:block;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-soft);margin:12px 0 4px;}
-  .text-input{
-    width:100%;
-    padding:10px 12px;
-    border:1px solid #c9b98a;
-    border-radius:4px;
-    background:#fffdf6;
-    color:var(--ink);
-    font-size:1rem;
-  }
-  .hint{margin-top:8px;color:var(--ink-soft);font-size:.9rem;}
-  .error-text{color:var(--red-stamp);font-weight:600;margin-top:8px;font-size:.9rem;}
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--folder);
+  background: var(--stamp-red);
+  padding: 3px 10px;
+  transform: rotate(-1deg);
+  margin-bottom: 10px;
+}
 
-  .btn{
-    display:inline-block;
-    margin-top:14px;
-    margin-right:8px;
-    padding:10px 18px;
-    border-radius:4px;
-    font-weight:600;
-    letter-spacing:.3px;
-    font-size:.92rem;
-    transition:transform .1s ease, filter .15s ease;
-  }
-  .btn:hover{filter:brightness(1.08);}
-  .btn:active{transform:translateY(1px);}
-  .btn:disabled{opacity:.4;cursor:not-allowed;filter:none;}
-  .btn-primary{background:linear-gradient(180deg,var(--brass),var(--brass-dim));color:#1c1608;}
-  .btn-secondary{background:#2c3644;color:var(--cream-text);border:1px solid var(--brass-dim);}
-  .btn-ghost{background:transparent;color:var(--brass);border:1px solid transparent;}
-  .btn-danger{background:#5c2019;color:#f3d9d2;}
-  .btn.tiny{padding:5px 10px;font-size:.75rem;margin-top:0;}
-  .file-btn{position:relative;}
-  .file-btn.small{margin-top:8px;}
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  margin: 0 0 4px;
+  color: #241f19;
+  text-shadow: 2px 2px 0 rgba(255,255,255,0.15);
+}
 
-  details.how-to{margin-top:22px;color:#cfc4a6;}
-  details.how-to summary{cursor:pointer;color:var(--brass);font-weight:600;}
-  details.how-to ol{margin-top:8px;}
-  details.how-to li{margin-bottom:4px;}
+.subtitle { font-family: var(--font-mono); color: var(--ink-soft); margin: 0 0 26px; font-size: 0.95rem; }
 
-  /* Catalog editor */
-  .catalog-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-  .ce-form{margin-bottom:22px;}
-  .ce-form-grid{display:grid;grid-template-columns:140px 1fr;gap:18px;}
-  @media (max-width:600px){ .ce-form-grid{grid-template-columns:1fr;} }
-  .ce-photo-col{text-align:center;}
-  .ce-preview{width:120px;height:120px;object-fit:cover;border-radius:4px;border:2px solid var(--brass-dim);background:#ddd0a8;}
-  .ce-actions{margin-top:10px;}
+/* ========================================================
+   BOTÕES
+   ======================================================== */
+.btn {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  background: var(--stamp-red);
+  color: #fdf6ea;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
 
-  .dossier-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
-    gap:14px;
-    margin-top:6px;
-  }
-  .dossier-card{
-    background:var(--paper);
-    border:1px solid var(--paper-dark);
-    border-radius:4px;
-    padding:8px;
-    color:var(--ink);
-    position:relative;
-    box-shadow:0 3px 8px rgba(0,0,0,.3);
-    transition:transform .12s ease;
-  }
-  .dossier-card:hover{transform:translateY(-2px);}
-  .dossier-photo{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:3px;display:block;background:#ddd0a8;}
-  .dossier-name{
-    font-family:var(--font-mono);
-    text-transform:uppercase;
-    font-size:.78rem;
-    text-align:center;
-    margin-top:6px;
-    font-weight:700;
-  }
-  .dossier-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px;min-height:0;}
-  .tag{
-    font-size:.62rem;
-    border:1px solid var(--brass-dim);
-    color:var(--ink-soft);
-    padding:1px 6px;
-    border-radius:20px;
-    white-space:nowrap;
-  }
-  .dossier-edit-actions{display:flex;gap:6px;justify-content:center;margin-top:8px;}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.25); }
+.btn:active { transform: translateY(0); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  /* Game board specific cards */
-  .dossier-card.small{cursor:pointer;user-select:none;}
-  .dossier-card.flipped{opacity:.38;filter:grayscale(70%);}
-  .dossier-card.flipped::after{
-    content:'DESCARTADO';
-    position:absolute;
-    top:42%;left:50%;
-    transform:translate(-50%,-50%) rotate(-13deg);
-    color:var(--red-stamp);
-    border:3px solid var(--red-stamp);
-    padding:2px 6px;
-    font-family:var(--font-display);
-    font-weight:700;
-    letter-spacing:1px;
-    font-size:.62rem;
-    background:rgba(255,255,255,.65);
-    border-radius:2px;
-  }
+.btn-outline { background: transparent; color: #241f19; border: 2px solid #241f19; }
+.btn-small { padding: 8px 12px; font-size: 0.78rem; }
 
-  /* Lobby */
-  .lobby-panel{max-width:520px;margin:0 auto;}
-  .room-code-display{display:flex;align-items:center;gap:10px;margin:6px 0 10px;}
-  .room-code{font-size:1.8rem;letter-spacing:4px;background:#2c3644;color:var(--brass);padding:6px 14px;border-radius:4px;}
-  .player-list{margin:10px 0;}
-  .player-list li{padding:6px 0;border-bottom:1px dashed var(--paper-dark);}
-  .player-list li.offline{opacity:.5;}
-  .badge{font-size:.65rem;background:var(--brass-dim);color:#fff8e6;padding:2px 6px;border-radius:3px;margin-left:6px;}
-  .badge.muted{background:#999;}
+/* ========================================================
+   TELA 1 — SELEÇÃO DE BARALHOS + CÓDIGO DA PARTIDA
+   ======================================================== */
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 26px;
+}
 
-  /* Game screen */
-  .game-topbar{align-items:center;}
-  .roomtag{color:#b9ac8c;font-size:.6em;margin-left:8px;}
-  .turn-indicator{
-    font-family:var(--font-display);
-    letter-spacing:1px;
-    padding:6px 14px;
-    border-radius:20px;
-    background:#2c3644;
-    border:1px solid var(--brass-dim);
-    color:#cfc4a6;
-    font-size:.85rem;
-  }
-  .turn-indicator.my-turn{background:var(--brass);color:#1c1608;border-color:var(--brass);}
+.deck-card {
+  position: relative;
+  background: var(--folder);
+  border: 1px solid var(--folder-shadow);
+  box-shadow: 0 8px 14px rgba(0,0,0,0.22);
+  padding: 18px 16px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, outline-color 0.15s ease;
+}
 
-  .players-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
-  .player-chip{
-    display:flex;align-items:center;gap:6px;
-    background:#232e3c;border:1px solid #33404f;
-    padding:5px 10px;border-radius:20px;font-size:.82rem;
-  }
-  .player-chip.active{border-color:var(--brass);color:var(--brass);}
-  .player-chip.dead{opacity:.4;text-decoration:line-through;}
-  .player-chip.me{font-weight:700;}
-  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
-  .dot.on{background:var(--green-ok);}
-  .dot.off{background:#888;}
+.deck-card:hover { transform: translateY(-3px); box-shadow: 0 12px 18px rgba(0,0,0,0.28); }
 
-  .my-secret-panel{
-    display:flex;align-items:center;gap:10px;
-    background:#232e3c;border:1px solid var(--brass-dim);
-    border-radius:6px;padding:8px 12px;margin-bottom:16px;
-  }
-  .my-secret-photo{width:44px;height:44px;object-fit:cover;border-radius:4px;}
-  .my-secret-name{font-family:var(--font-display);letter-spacing:1px;color:var(--brass);}
+.deck-card::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 22px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb199, var(--string-red) 60%, #6f1b12);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+}
 
-  .opponent-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-  .tab-btn{
-    background:#2c3644;color:var(--cream-text);
-    border:1px solid #3d4b5c;
-    border-bottom:none;
-    padding:8px 16px;
-    border-radius:8px 8px 0 0;
-    font-size:.85rem;
-  }
-  .tab-btn.active{background:var(--paper);color:var(--ink);font-weight:700;}
-  .tab-btn.dead{opacity:.45;}
+.deck-card.selecionado { outline: 3px solid var(--teal); outline-offset: 2px; }
+.deck-card.selecionado .deck-check { background: var(--teal); border-color: var(--teal); }
+.deck-card.selecionado .deck-check::after { opacity: 1; }
 
-  .game-grid{margin-bottom:18px;}
+.deck-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.deck-nome { font-family: var(--font-mono); font-weight: 700; font-size: 1rem; margin: 0 0 4px; }
+.deck-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-soft); margin: 0; }
 
-  .action-panel{margin-bottom:20px;}
-  .action-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-  @media (max-width:640px){ .action-cols{grid-template-columns:1fr;} }
-  .action-col select, .action-col input{margin-bottom:8px;}
-  .question-text{font-style:italic;margin:8px 0;font-size:1.05rem;}
+.deck-check {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ink-soft);
+  border-radius: 4px;
+  background: transparent;
+  position: relative;
+}
 
-  .log-panel{
-    background:var(--paper);
-    color:var(--ink);
-    border-radius:6px;
-    border:1px solid var(--paper-dark);
-    padding:16px;
-  }
-  .log-title{color:var(--ink-soft);margin-bottom:8px;letter-spacing:1px;}
-  .log-scroll{max-height:220px;overflow-y:auto;padding-right:4px;}
-  .log-line{font-family:var(--font-mono);font-size:.85rem;padding:4px 0;border-bottom:1px dotted #d8c99a;}
-  .log-line.system{color:var(--brass-dim);font-weight:700;}
-  .log-line b.ok{color:var(--green-ok);}
-  .log-line b.no{color:var(--red-no);}
+.deck-check::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fdf6ea;
+  font-size: 0.8rem;
+  opacity: 0;
+}
 
-  .end-panel{max-width:640px;text-align:center;}
-  .winner-text{font-family:var(--font-display);font-size:1.4rem;color:var(--red-stamp);margin:10px 0 16px;}
+.deck-avatars { display: flex; margin-top: 12px; }
 
-  .setup-panel{max-width:600px;}
-  .setup-steps{margin:12px 0;}
-  .setup-steps li{margin-bottom:8px;}
-  code{background:#e2d3a8;padding:1px 5px;border-radius:3px;font-family:var(--font-mono);}
+.deck-avatars img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--folder);
+  background: #fff;
+  object-fit: cover;
+  margin-left: -10px;
+}
+
+.deck-avatars img:first-child { margin-left: 0; }
+
+.deck-extra { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-soft); align-self: center; margin-left: 6px; }
+
+/* Caixa do código da partida (sincronização entre os dois jogadores) */
+.sync-box {
+  background: var(--folder);
+  border: 1px dashed var(--ink-soft);
+  padding: 16px 18px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.sync-box label {
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-bottom: 8px;
+}
+
+.sync-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.sync-row input {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 10px;
+  border: 2px solid var(--ink-soft);
+  border-radius: 3px;
+  background: #fff;
+  width: 160px;
+}
+
+.sync-hint { font-family: var(--font-mono); font-size: 0.75rem; color: var(--ink-soft); margin: 10px 0 0; }
+.sync-feedback { font-family: var(--font-mono); font-size: 0.75rem; color: var(--teal); margin: 8px 0 0; min-height: 1em; font-weight: 700; }
+
+.selection-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: rgba(0,0,0,0.12);
+  padding: 14px 18px;
+  border-radius: 4px;
+}
+
+.selection-summary p { font-family: var(--font-mono); margin: 0; }
+.selection-warning { color: var(--stamp-red); font-weight: 700; }
+
+/* ========================================================
+   TELA 2 — JOGO
+   ======================================================== */
+.board-header { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
+
+.match-code-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: var(--teal);
+  color: #fdf6ea;
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-top: 6px;
+}
+
+.case-file {
+  background: var(--folder);
+  border: 1px solid var(--folder-shadow);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,255,255,0.15) inset;
+  padding: 16px 18px 18px;
+  width: 190px;
+  text-align: center;
+  transform: rotate(2deg);
+  position: relative;
+}
+
+.case-file::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, var(--gold) 60%, #8a660f);
+  box-shadow: 0 3px 4px rgba(0,0,0,0.4);
+}
+
+.case-label { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 6px 0 10px; }
+
+.case-photo-frame {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.case-photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+.question-mark { font-family: var(--font-display); font-size: 3.2rem; color: var(--folder-shadow); }
+
+.case-name { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.03em; margin: 0 0 12px; min-height: 1.2em; }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0,0,0,0.12);
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin-bottom: 26px;
+}
+
+.status-text { font-family: var(--font-mono); margin: 0; color: #241f19; }
+.toolbar .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 22px 18px; }
+
+.card {
+  position: relative;
+  background: var(--folder);
+  padding: 10px 10px 12px;
+  border: 1px solid var(--folder-shadow);
+  box-shadow: 0 8px 14px rgba(0,0,0,0.22);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card.r0 { transform: rotate(-2deg); }
+.card.r1 { transform: rotate(1.5deg); }
+.card.r2 { transform: rotate(-1deg); }
+.card.r3 { transform: rotate(2deg); }
+.card.r4 { transform: rotate(-2.5deg); }
+
+.card:hover { transform: scale(1.05) rotate(0deg); box-shadow: 0 12px 20px rgba(0,0,0,0.3); z-index: 2; }
+
+.card .pin {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb199, var(--string-red) 60%, #6f1b12);
+  box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+  z-index: 3;
+}
+
+.photo-frame { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #fff; border: 1px solid #ccc; }
+
+.photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 0.25s ease, opacity 0.25s ease; }
+
+.card-name { font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem; text-align: center; margin: 8px 0 0; color: var(--ink); }
+
+.stamp {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-18deg) scale(1.4);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  letter-spacing: 0.05em;
+  color: var(--stamp-red);
+  border: 3px solid var(--stamp-red);
+  padding: 3px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+  mix-blend-mode: multiply;
+}
+
+.card.descartado .photo-frame img { filter: grayscale(100%) brightness(0.55); }
+.card.descartado .stamp { opacity: 0.9; transform: translate(-50%, -50%) rotate(-18deg) scale(1); }
+.card.descartado .card-name { color: var(--ink-soft); text-decoration: line-through; }
+
+[hidden] { display: none !important; }
+
+@media (max-width: 480px) {
+  .board-header { flex-direction: column; }
+  .case-file { align-self: center; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 16px 12px; }
+  .sync-row input { width: 100%; }
+}
 </style>
 </head>
 <body>
-<div id="app"></div>
 
-<!-- SDK do Firebase (necessário apenas para o modo online) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <div class="board">
+
+    <!-- ============================================================
+         TELA 1 — SELEÇÃO DE BARALHOS + CÓDIGO DA PARTIDA
+         ============================================================ -->
+    <section id="screenBaralhos">
+      <span class="eyebrow">Escolha suas provas</span>
+      <h1>Selecione os baralhos</h1>
+      <p class="subtitle">Cada baralho é um grupo de suspeitos. Combine quantos quiser — no máximo 30 aparecem em jogo por partida.</p>
+
+      <div class="sync-box">
+        <label for="codigoInput">Código da partida (para jogar com outra pessoa)</label>
+        <div class="sync-row">
+          <input type="text" id="codigoInput" maxlength="8" placeholder="Ex: LOBO42">
+          <button class="btn btn-outline btn-small" id="gerarCodigoBtn" type="button">Gerar código</button>
+          <button class="btn btn-outline btn-small" id="copiarLinkBtn" type="button">Copiar link do convite</button>
+        </div>
+        <p class="sync-hint">
+          Os dois jogadores precisam digitar o mesmo código e marcar os mesmos baralhos — assim os dois veem
+          exatamente o mesmo QUADRO de suspeitos. O suspeito secreto de cada jogador é sorteado à parte,
+          então mesmo com o mesmo código vocês não ficam com o mesmo segredo. O link do convite já leva
+          o código e os baralhos marcados.
+        </p>
+        <p class="sync-feedback" id="syncFeedback"></p>
+      </div>
+
+      <div class="deck-grid" id="deckGrid"></div>
+
+      <div class="selection-summary">
+        <p id="selectionSummaryText">Nenhum baralho selecionado.</p>
+        <button class="btn" id="startGameBtn" disabled>Começar investigação</button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TELA 2 — JOGO
+         ============================================================ -->
+    <section id="screenJogo" hidden>
+
+      <header class="board-header">
+        <div class="header-left">
+          <span class="eyebrow">Investigação em andamento</span>
+          <h1>Cara a Cara</h1>
+          <p class="subtitle" id="deckSummaryText">Descarte os suspeitos até sobrar apenas um.</p>
+          <span class="match-code-tag" id="matchCodeTag" hidden></span>
+        </div>
+
+        <div class="case-file" id="caseFile">
+          <p class="case-label">Arquivo confidencial</p>
+          <div class="case-photo-frame" id="casePhotoFrame">
+            <img id="caseImage" src="" alt="Suspeito sorteado" hidden>
+            <span class="question-mark" id="caseQuestionMark">?</span>
+          </div>
+          <p class="case-name" id="caseName">???</p>
+          <button class="btn" id="revealBtn" type="button">Revelar suspeito</button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <p class="status-text">
+          Restam <strong id="countActive">0</strong> de <strong id="countTotal">0</strong> suspeitos no quadro.
+        </p>
+        <div class="actions">
+          <button class="btn btn-outline" id="changeDeckBtn" type="button">Trocar baralhos</button>
+          <button class="btn btn-outline" id="resetBtn" type="button">Novo caso</button>
+        </div>
+      </div>
+
+      <main class="grid" id="charactersGrid" aria-live="polite"></main>
+
+    </section>
+
+  </div>
 
 <script>
-/* =========================================================================
-   CONFIGURAÇÃO DO FIREBASE
-   -------------------------------------------------------------------------
-   Para o jogo funcionar online entre vários jogadores, ele precisa de um
-   banco de dados em tempo real gratuito. Siga o README.md que acompanha
-   este arquivo (ou os passos abaixo) para gerar sua própria configuração:
+/* ============================================================
+   BARALHOS (catálogo de personagens agrupados)
+   ------------------------------------------------------------
+   Cada baralho tem: id, nome e uma lista de personagens.
+   A lista de personagens usa o MESMO estilo simples da
+   primeira versão do jogo — um array de objetos com
+   id, nome e imagem — então editar continua fácil:
 
-   1. Acesse https://console.firebase.google.com e crie um projeto grátis.
-   2. No menu lateral, abra "Realtime Database" > "Criar banco de dados"
-      e inicie em "modo de teste".
-   3. Vá em "Configurações do projeto" (ícone de engrenagem) > "Seus apps"
-      > clique no ícone </> para criar um app da Web.
-   4. Copie o objeto firebaseConfig gerado e cole-o substituindo o objeto
-      abaixo.
-   5. Salve este arquivo e recarregue a página.
-========================================================================= */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAPq7aTo1c9kcxxF51aGxNX2EheJREnPGo",
-  authDomain: "cara-cara-espectral.firebaseapp.com",
-  projectId: "cara-cara-espectral",
-  storageBucket: "cara-cara-espectral.firebasestorage.app",
-  messagingSenderId: "803994738073",
-  appId: "1:803994738073:web:b64f4fc952756ed1974708",
-  measurementId: "G-XPKSQZMN57"
-};
+     { id: 1, nome: "João", imagem: "joao.png" }
 
-let db = null;
-let firebaseReady = false;
-try {
-  if (firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("COLE_AQUI")) {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-    firebaseReady = true;
+   Para ADICIONAR alguém a um baralho: copie uma linha dentro
+   da lista "personagens" daquele baralho e troque id/nome/imagem.
+   Para REMOVER: apague a linha.
+   Para CRIAR um baralho novo: copie um bloco inteiro do array
+   "baralhos" (com id, nome e personagens) e edite.
+
+   Um baralho pode ter QUALQUER quantidade de personagens
+   (inclusive mais de 30) — o limite de 30 em tela só é
+   aplicado na hora de montar a partida, em iniciarPartida().
+   ============================================================ */
+const baralhos = [
+  {
+    id: "classicos",
+    nome: "E pluribus Unum",
+    personagens: [
+      { id: 1,  nome: "Cairo Wesley",     imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287230035345801276/Photo_Face_Swap.jpg?ex=6a4a61a4&is=6a491024&hm=1127b098c0f30e3cfbe12abe0025782e9579f65fb6423b486dfd2eac239a349b&" },
+      { id: 2,  nome: "Caio",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287228411319681055/11946452-3381-4e42-855f-3f9a56055bee.png?ex=6a4a6020&is=6a490ea0&hm=e75071511fe37fe3c39d3e7552c86048128b1a4e6896c01ca599bbb43b3afa8b&" },
+      { id: 3,  nome: "Cintia Vasconcelos",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1523032239741472941/IMG_4795.jpg?ex=6a4aa1ce&is=6a49504e&hm=3e6309c91e698ab6713146dc2752fa1e34dc0891753f66d97d6555dc163f796b&" },
+      { id: 4,  nome: "Maverick",    imagem: "https://media.discordapp.net/attachments/892944780206678057/1287228001502888038/remix-5a9182fc-3545-4ece-a358-2b7097a0a794.png?ex=6a4a5fbf&is=6a490e3f&hm=f5413ae2e236f77bc605213112f82377db256ef5345933954f77753f283fae9f&=&format=webp&quality=lossless&width=246&height=438" },
+      { id: 5,  nome: "Ludwig",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287260495304196108/Adrien_Brody.jpg?ex=6a4a7e02&is=6a492c82&hm=b3fa663ba5f36f68a966c84dd2ba04366d711e1edfa2a20c93aefe81755eeea8&https://api.dicebear.com/7.x/avataaars/svg?seed=ElisaPrado" },
+      { id: 6,  nome: "Kusnetsova",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287261052165292062/f93de9a631a43ed317e7a23d454436a7.png?ex=6a4a7e86&is=6a492d06&hm=dc4cb836999fb9f74e44e120761e7000ad02f0ad28fca0f6d6f88a852f35b2bc&" },
+      { id: 7,  nome: "Agatha",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1292374579435802766/f4ea7e76be65ddde7a364c1c9beea34a.png?ex=6a49fb1e&is=6a48a99e&hm=f440d9c07a17eed85bedee8b971a473c228510b754177becdc0861758867d98f&" },
+      { id: 8,  nome: "Paulina",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1292392108396642345/96df950eb8a9a4ac3b6dd8b7f03b8ef6.png?ex=6a4a0b72&is=6a48b9f2&hm=c60205204ce953024aa54186c8243d07aa33892e5832a1f8bcb5cede24130da6&" },
+      { id: 9,  nome: "Luiza Leonora",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1289802926050775081/5c54882e7b344a3f09ee5562f8aeb8f8.png?ex=6a4a8354&is=6a4931d4&hm=25f3dae910d96813198cdf3ddc54aac8bd62177f220c5b0eec658cd29d997783&" },
+      { id: 10, nome: "Transcendente",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1307220575596449792/c860703155daed5f0115aaf2fdb75dd4.jpg?ex=6a4a98c8&is=6a494748&hm=9ecd4726dcf5af7248c23878466dee093a45cb3f9891cb55f3ada1cf2178e0ed&" },
+      { id: 11, nome: "Tarena Blair",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1307225574640586824/773e041f2c272d1d53f1aca8c81fd913.jpg?ex=6a4a9d70&is=6a494bf0&hm=32abcbb95fbb831d321fca142b37df662b0eebbe8414d41156ff9b1305ec6f99&" },
+      { id: 12, nome: "Demônio do Caixão",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1317692953145114645/500.png?ex=6a4a7671&is=6a4924f1&hm=302cf453031ad2b73677bfc0c75526c8304ddc087ec8f9646018627fc5a2a6a5&" },
+      { id: 13, nome: "Molestador",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1327515904761925632/43871a9e0ffebe84f160e8a7c04468a0.png?ex=6a4a9a47&is=6a4948c7&hm=61d1ae07dc3bceafbc4b2950f1455a1d0f8b4504e5511d81f730dc41cc54d193&" },
+      { id: 14, nome: "Kevin o Chave", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1523035685576114258/GLX6VgvWoAA0-V4.png?ex=6a4aa504&is=6a495384&hm=38f98cdc177ed21ce2eb97488f28c54664fdfa71999ffe5c55fe72dad67f6e4b&" },
+      { id: 15, nome: "Viscerado", imagem: "https://static.wikia.nocookie.net/animeverso/images/7/75/Bestial_em_Desconjura%C3%A7%C3%A3o.webp/revision/latest?cb=20250205162024&path-prefix=pt-br" },
+      { id: 16, nome: "Xamã",  imagem: "https://cdn.discordapp.com/attachments/1494585508704026634/1518134806955688147/image.png?ex=6a4a9cf7&is=6a494b77&hm=ec18ea5db95fd214736b49523989f8bdfe9910f8c552cf7919b21eadaf26e3a6&" }
+    ]
+  },
+  {
+    id: "Regarder",
+    nome: "Regarder",
+    // Baralho de propósito com mais de 30 pessoas, para mostrar que
+    // um baralho pode guardar bastante gente — o corte pra 30 só
+    // acontece na montagem da partida (ver iniciarPartida()).
+    personagens: [
+      { id: 17, nome: "Omar Rafiq",      imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523045228301389844/cf5edbda-d84a-47c2-bcee-77c9d51c19da.png?ex=6a4aade7&is=6a495c67&hm=579a9af9bb2fb22699ca8df514f4b94e77079181446ac682ee7ba3f2258459a6&" },
+      { id: 18, nome: "Helena Krieger",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1383673111873982575/1f2a8fbe-25a9-4d97-894f-45bbf3f055c5.png?ex=6a4a8e41&is=6a493cc1&hm=36b9810264876b467ebfa36e77d60e787b761d11601b76abaa8545491cec752f&" },
+      { id: 19, nome: "Vincent",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523050516689453119/image.png?ex=6a4ab2d4&is=6a496154&hm=a7d2ec38a2a1592e294ac12f09e5918cfe21b597ff3a08a08bb4e17739ce9772&" },
+      { id: 20, nome: "Xavier Vidales", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1401427149226901616/file_00000000c35061f9a1a4eb1f4e16b2eb.png?ex=6a4a8b7d&is=6a4939fd&hm=54b4e1f4e92a25482ffa579a0f8909dbc89a2a84a764f1d47f77c166665b7083&" },
+      { id: 21, nome: "Rex",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523060451649392740/WhatsApp_Image_2026-07-04_at_17.17.51.jpeg?ex=6a4abc14&is=6a496a94&hm=fd8a05d4fc2b9d14cccf99c93e0ec9001a0da765881d8f4eec1df39b62fed921&" },
+      { id: 22, nome: "Henry",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1383678091661934722/image.png?ex=6a4a92e4&is=6a494164&hm=ad71bdaf1e7f57ea48f2c4b138c02fbd98f9ac418f5d0ac6a282e43e30efb199&" },
+      { id: 23, nome: "Graggle",     imagem: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/05045b60-ca46-4923-a863-711589923258/df7h9ht-90364473-92b3-44b7-9150-00c7e83cf7a0.png/v1/fill/w_1280,h_1484/graggle_simpson_by_artsofbardelli_df7h9ht-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTQ4NCIsInBhdGgiOiIvZi8wNTA0NWI2MC1jYTQ2LTQ5MjMtYTg2My03MTE1ODk5MjMyNTgvZGY3aDlodC05MDM2NDQ3My05MmIzLTQ0YjctOTE1MC0wMGM3ZTgzY2Y3YTAucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.9fT3hZMTpGuSSW8HEbhUtMgkoRijGiTXhTU3-YX-2m4" },
+      { id: 24, nome: "Hans",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1492744551977189496/RE5DX92009-09-1605-47-52-50.jpg?ex=6a4a8773&is=6a4935f3&hm=4a5c87c172a0ce109f15b90ac37cbe7e1cace85b27f8bba87013a4986416f75c&=&format=webp&width=1423&height=800" },
+      { id: 25, nome: "Massacre",      imagem: "https://cdn.discordapp.com/attachments/1494585508704026634/1500398944772034692/Captura_de_tela_2026-05-03_042752.png?ex=6a4a07e8&is=6a48b668&hm=72a818823ed8a22ffda85a00545068253e13b3ac9f36be6c413c1694098c9552&" },
+      { id: 26, nome: "Brusco Fyodor",     imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1492726901935046786/bda03ac0cac99c32817a4baa21051f88.png?ex=6a4a7702&is=6a492582&hm=2d24182caded3b436d545722a25c324ad36cc7c9dddc51a20a6a8656dafc33be&" },
+      { id: 27, nome: "Veronica",      imagem: "https://media.discordapp.net/attachments/892944780206678057/1492787109625466940/e9dc76b96e9c30bfe91a0ac8e5a58219.png?ex=6a4aaf15&is=6a495d95&hm=bbc60e15a08f9d789a7bd9de0977606bd0769aceb2362eb89c136bdfd77fdae2&=&format=webp&quality=lossless&width=766&height=930" },
+      { id: 28, nome: "Big Alexander",     imagem: "https://media.discordapp.net/attachments/1494585508704026634/1505432165427707954/image.png?ex=6a4a8b35&is=6a4939b5&hm=815ddaf67216b440087b3cbd5da6fee2036aabf0a45fd7e3fb67311c51b0106b&=&format=webp&quality=lossless&width=619&height=930" },
+      { id: 29, nome: "Fahr",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1461954864216150262/0d9a4bab4af5c33abf70ad41b67a5b78.png?ex=6a4a93d1&is=6a494251&hm=2faed4131030ebdfb9c8aef22a7cd0255a27cec5d07d6c39bfac52127cc6b295&" },
+      { id: 30, nome: "Anastacia",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1461955059305938984/74f0a667ae04faa831bb368ddbdbaf66.png?ex=6a4a93ff&is=6a49427f&hm=247f46a5fa7d687b52cd901e7c12fe83b689b58cd1ae73b5f15df00464443937&" },
+      { id: 31, nome: "Victor",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464852425901998252/9k.png?ex=6a4a9261&is=6a4940e1&hm=caab92eb8eeb0467f2e3b0c85088667ffebc2c5a0d7f7a34cf6a50bc3b32f037&" },
+      { id: 32, nome: "Olivier",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464852379873710220/image.png?ex=6a4a9257&is=6a4940d7&hm=f8a17b2a6c3638f80073235127bf28ab53e193d20510598ddab08d3587a6291f&" },
+      { id: 33, nome: "Charlotte",   imagem: "" },
+      { id: 34, nome: "Axel",   imagem: "" },
+      { id: 35, nome: "Asaka de Fleur",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464851209944043688/Captura_de_tela_2026-01-25_021528.png?ex=6a4a9140&is=6a493fc0&hm=d06963eb68a16323d65d13f3d1c7675a6fb1981003ed8a84e79cea3e64aa5480&" },
+      { id: 36, nome: "Lila", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464870340306931928/image.png?ex=6a4aa311&is=6a495191&hm=c541ce3c29cb6e34f896802aee7d4c6a97914f9542fc951056820637abcb2929&" },
+      { id: 37, nome: "Angela",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1406498686229418024/image.png?ex=6a4a89ba&is=6a49383a&hm=8bc560a9f9585edd2c7e75c1c991b8418a11402b09d7207f12b9655399b160c9&" },
+      { id: 38, nome: "Dorian Michelli",    imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523049317009592371/image.png?ex=6a4ab1b6&is=6a496036&hm=dde37bb3e5061f86b1d31893d02d7aaf7ac64d3de9b4fc35fd30d9c89cf2f87c&" },
+      { id: 39, nome: "A Excomungada",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1411584205946617887/image.png?ex=6a4a94fc&is=6a49437c&hm=307040a9ce43b0601f1a1f70c763de5c90820d92aeae5fe0a4d0c163904d2374&" },
+      { id: 40, nome: "Lycoris",      imagem: "" },
+      { id: 41, nome: "Maurice",     imagem: "https://media.discordapp.net/attachments/892944780206678057/1391286915977711676/Balu_Jovem_.png?ex=6a4a91a9&is=6a494029&hm=46dbd2e90aa7e478b56605eff865b4b163b18c1b0e98c9a41c8e44fcdb544f2f&=&format=webp&quality=lossless&width=690&height=930" },
+      { id: 42, nome: "Yung Yie",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523059423436865556/f4ea7981-5d5b-4e8e-92cc-c2d8a902696e.png?ex=6a4abb1f&is=6a49699f&hm=fd31c519ef5bb0c9910dd6d53d624c823e67f0568531c4dab94fe8feca43d1d7&" },
+      { id: 43, nome: "Bernard",    imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523060313552060486/image.png?ex=6a4abbf3&is=6a496a73&hm=9ee8912ec9f89dce55c4a8a6c304608007e35bdc20d615a675fb82bb05529b3c&" },
+      { id: 44, nome: "Franz",      imagem: "https://media.discordapp.net/attachments/1465129775822802967/1523060528333852794/image.png?ex=6a4abc27&is=6a496aa7&hm=22c7bfb500842c8bf791670fd9f1992b685890a3c948508270519a47719e4f64&=&format=webp&quality=lossless&width=264&height=254" },
+    ]
+  },
+  {
+    id: "familia",
+    nome: "Miséria Extrema",
+    personagens: [
+      { id: 52, nome: "Layla Versace",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000080726130819/CWafs3HeNigAAAABJRU5ErkJggg.png?ex=6a4a7dfa&is=6a492c7a&hm=91dde3b2015fa469cf433cc0936a8cb023e1af16f32a9231d06ea0ccefd32452&" },
+      { id: 53, nome: "Ronaldo Garcia",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000286615863346/IMG_3474.jpg?ex=6a4a7e2b&is=6a492cab&hm=477df3a94a41ee4f151e3f211de27437620b1daae7448f573d8e043d1effdb50&" },
+      { id: 54, nome: "Bjorn",       imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMnvcSk6IX76V8eyE0XDoVs6QCxf2MhqNH3frdHRzlixdrtrp8vBsOaak&s=10" },
+      { id: 55, nome: "Eva Fernandes",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1441999891974066228/IMG-20251122-WA0092.jpg?ex=6a4a7dcd&is=6a492c4d&hm=058b03b0366071264906353344f2de6583df36fd613a85d6327e8c96e16f7cde&" },
+      { id: 56, nome: "Nazaré Hammestron",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000177148854332/IMG-20250916-WA0001.jpg?ex=6a4a7e11&is=6a492c91&hm=f3115c8b4ebdfd89d84422d491411cb83720c833c88ce8e56f0947292bf7c69c&" },
+      { id: 57, nome: "Domador",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1447463110343524402/28b11a03d45fc1219f1a1e89bddcaed3.png?ex=6a4a9752&is=6a4945d2&hm=d013fb52b47a9119bb624c04135d7c9785e0ebc803df8433b50aee6f7aeb5b67&" },
+      { id: 58, nome: "Pai do Gerson",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1459413554540056742/image0.jpg?ex=6a4a8f89&is=6a493e09&hm=bc5eda46f605b1d2f4c3a28167a59cdf9b7a3123987958b1878821e236261062&" },
+    ]
   }
-} catch (e) {
-  console.error("Erro ao iniciar Firebase:", e);
-  firebaseReady = false;
+  ,{
+    id: "preexistir",
+    nome: "Preexistir",
+    personagens: [
+      { id: 52, nome: "John Marston",       imagem: "https://i.pinimg.com/736x/b2/34/7f/b2347f10a1cc50f5f08e44bba3c34c8c.jpg" },
+      { id: 53, nome: "Tião",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1360775562833957098/file_00000000f72461f7a52d576712ca9b2a_conversation_id67f94bbe-33a4-8009-8d78-6d71b2cadb62message_id443971be-8e96-4f2c-876e-02cda98d8e7f.png?ex=6a4a4fc0&is=6a48fe40&hm=e0c386d037d5f764e260c7409c9d447ebadf105b5cb0f53fb54c8c5362a3dfa7&=&format=webp&quality=lossless&width=620&height=930" },
+      { id: 54, nome: "Lina Mugler",       imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523056534093955253/image.png?ex=6a4ab86e&is=6a4966ee&hm=814518f6b059e2d0da959f0c6ed75e70d96719b3a90f98961059dd42c6bbe79f&" },
+      { id: 55, nome: "Cabrito",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1360782770837913710/16429c4eca26183f839af4453c9deb8f.jpg?ex=6a4a5676&is=6a4904f6&hm=20aa429e41c3fa82a0fb1568effb5e61e86f78472d654eefa08f4d064a90bb6a&=&format=webp&width=523&height=930" },
+      { id: 56, nome: "Zahra",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360776494179422318/3e0606985fcd8a2c8a3262bf3fee5f5f.jpg?ex=6a4a509e&is=6a48ff1e&hm=4fcd8f439332d0a367489f75a2eb216ef1e0901ecf3548a11e5848d12e929167&" },
+      { id: 57, nome: "TPK",   imagem: "https://media.discordapp.net/attachments/892944780206678057/1371016856743182346/4230254c464762b4f93cae6fc87244fa.png?ex=6a4aa7b2&is=6a495632&hm=286df353853b07d6244a8ae9526c3c2aab849f5c11f86ce02ad59f319b0d3dc8&=&format=webp&quality=lossless&width=246&height=438" },
+      { id: 58, nome: "Nero",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360775990778925276/IMG_6111.jpg?ex=6a4a5026&is=6a48fea6&hm=cd779709ef0d1a7e7f861024c5633820e809904deb889c209e3c50dc047b2833&" },
+      { id: 59, nome: "Djalma",   imagem: "https://media.discordapp.net/attachments/892944780206678057/1360436513195688058/image.png?ex=6a4a657c&is=6a4913fc&hm=5c4c0754bd6e8f7a8ef98d12a8b7e8d47fb523169a095e2f107bff8f8bcd1798&=&format=webp&quality=lossless&width=643&height=930" },
+      { id: 60, nome: "Beatriz",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1371008028605812766/1cef9d9cf4222769eb5b24e1b8751973.png?ex=6a4a9f7a&is=6a494dfa&hm=741f4bf89a50c0f3be15359783784ace8fecb3e31e4e1c137a4c62e873eea2a1&" },
+      { id: 61, nome: "Bola de Fogo",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360815939288829993/dc8129d755544b4557254c73ecb9ee66.png?ex=6a4a755a&is=6a4923da&hm=5cb27e5d1f7359a478f44c123b206cdfeb5b478fd24b7d52d5a1f4784565a5c9&" },
+    ]
+  }
+];
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+const LIMITE_EM_JOGO = 24;              // máximo de personagens visíveis por partida
+const baralhosSelecionados = new Set(); // ids dos baralhos marcados na tela 1
+let personagensEmJogo = [];             // lista final (já cortada em 30) usada na partida
+let personagemSorteado = null;
+let revelado = false;
+let rodada = 1;                         // incrementa a cada "Novo caso" (entra no seed)
+
+// Referências (tela 1)
+const screenBaralhos      = document.getElementById("screenBaralhos");
+const deckGrid             = document.getElementById("deckGrid");
+const selectionSummaryText = document.getElementById("selectionSummaryText");
+const startGameBtn         = document.getElementById("startGameBtn");
+const codigoInput          = document.getElementById("codigoInput");
+const gerarCodigoBtn       = document.getElementById("gerarCodigoBtn");
+const copiarLinkBtn        = document.getElementById("copiarLinkBtn");
+const syncFeedback         = document.getElementById("syncFeedback");
+
+// Referências (tela 2 — jogo)
+const screenJogo        = document.getElementById("screenJogo");
+const deckSummaryText   = document.getElementById("deckSummaryText");
+const matchCodeTag      = document.getElementById("matchCodeTag");
+const grid              = document.getElementById("charactersGrid");
+const countActiveEl     = document.getElementById("countActive");
+const countTotalEl      = document.getElementById("countTotal");
+const revealBtn         = document.getElementById("revealBtn");
+const resetBtn          = document.getElementById("resetBtn");
+const changeDeckBtn     = document.getElementById("changeDeckBtn");
+const caseImage         = document.getElementById("caseImage");
+const caseQuestionMark  = document.getElementById("caseQuestionMark");
+const caseName          = document.getElementById("caseName");
+
+/* ============================================================
+   GERADOR ALEATÓRIO COM SEMENTE (SEED)
+   ------------------------------------------------------------
+   Isto é o coração da sincronização entre os dois jogadores.
+   Como o jogo não tem servidor, cada jogador roda o embaralhamento
+   no próprio navegador — mas se os dois usarem a MESMA semente
+   (o "código da partida" + os mesmos baralhos + a mesma rodada),
+   o resultado do embaralhamento e o personagem sorteado saem
+   IDÊNTICOS nos dois lados.
+
+   xmur3: transforma qualquer texto em um número (hash).
+   mulberry32: gera números pseudoaleatórios a partir desse número.
+   ============================================================ */
+function xmur3(texto) {
+  let h = 1779033703 ^ texto.length;
+  for (let i = 0; i < texto.length; i++) {
+    h = Math.imul(h ^ texto.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
 }
 
-/* =========================================================================
-   UTILITÁRIOS
-========================================================================= */
-function uid(len){
-  len = len || 8;
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s = '';
-  for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
-}
-function esc(s){
-  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function hashStr(str){
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return h >>> 0;
-}
-function mulberry32(a){
-  return function(){
+function mulberry32(seed) {
+  let a = seed;
+  return function () {
     a |= 0; a = (a + 0x6D2B79F5) | 0;
     let t = Math.imul(a ^ (a >>> 15), 1 | a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-const TRANSPARENT_PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7';
 
-function sessionGet(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
-function sessionSet(k, v){ try { sessionStorage.setItem(k, v); } catch(e){} }
+// Cria uma função geradora de números aleatórios (0 a 1) a partir de um texto.
+// Se o texto for igual nos dois navegadores, a sequência de números também será.
+function criarGeradorComSemente(texto) {
+  const semente = xmur3(texto)();
+  return mulberry32(semente);
+}
 
-/* =========================================================================
-   GERAÇÃO DE AVATARES E CATÁLOGO PADRÃO
-========================================================================= */
-const SKIN_TONES = ['#f2c49b','#e3ac7d','#c98a5a','#a06a3c','#7a4a28'];
-const HAIR_COLORS = {loiro:'#dfc06a', castanho:'#6e4a2c', preto:'#241d18', ruivo:'#b5541f', grisalho:'#c7c7c1'};
-const HAIR_NAMES = Object.keys(HAIR_COLORS);
-const CARD_BG = ['#e7dab6','#dbe3d2','#dcdcea','#e8d3d3','#d2e2e6','#eadfc9'];
-
-function generateAvatar(seed){
-  const rnd = mulberry32(hashStr(String(seed)));
-  const skin = SKIN_TONES[Math.floor(rnd() * SKIN_TONES.length)];
-  const bg = CARD_BG[Math.floor(rnd() * CARD_BG.length)];
-  const bald = rnd() < 0.18;
-  const curly = !bald && rnd() < 0.5;
-  const hairName = HAIR_NAMES[Math.floor(rnd() * HAIR_NAMES.length)];
-  const hairColor = HAIR_COLORS[hairName];
-  const glasses = rnd() < 0.38;
-  const hat = !bald && rnd() < 0.2;
-  const beard = rnd() < 0.28;
-  const mustache = !beard && rnd() < 0.22;
-  const earrings = rnd() < 0.25;
-  const freckles = rnd() < 0.22;
-  const scarf = rnd() < 0.2;
-  const smiling = rnd() < 0.6;
-
-  const tags = [];
-  if (glasses) tags.push('usa óculos');
-  if (hat) tags.push('usa chapéu');
-  if (bald) tags.push('careca'); else tags.push(curly ? 'cabelo cacheado' : 'cabelo liso');
-  if (!bald) tags.push('cabelo ' + hairName);
-  if (beard) tags.push('tem barba');
-  if (mustache) tags.push('tem bigode');
-  if (earrings) tags.push('usa brincos');
-  if (freckles) tags.push('tem sardas');
-  if (scarf) tags.push('usa cachecol');
-  tags.push(smiling ? 'sorridente' : 'expressão séria');
-
-  let hairShape = '';
-  if (!bald && !hat) {
-    if (curly) {
-      let circles = '';
-      for (let i = 0; i < 9; i++) circles += `<circle cx="${30 + i * 15 + (i % 2 === 0 ? 0 : 4)}" cy="42" r="14"/>`;
-      hairShape = `<g fill="${hairColor}">${circles}<rect x="34" y="30" width="132" height="40" rx="20"/></g>`;
-    } else {
-      hairShape = `<path d="M32 70 Q30 20 100 18 Q170 20 168 70 L168 50 Q100 30 32 50 Z" fill="${hairColor}"/>`;
-    }
+// Embaralha uma lista (Fisher–Yates). Aceita um gerador customizado
+// (rng) — se nenhum for passado, usa Math.random (aleatório de verdade).
+function embaralhar(lista, rng = Math.random) {
+  const copia = [...lista];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
   }
-  const hatShape = hat ? `<g><path d="M28 62 Q30 18 100 16 Q170 18 172 62 L172 68 L28 68 Z" fill="#3a4552"/><rect x="20" y="60" width="160" height="14" rx="6" fill="#2b333d"/></g>` : '';
-  const beardShape = beard ? `<path d="M55 118 Q60 165 100 168 Q140 165 145 118 L140 140 Q100 158 60 140 Z" fill="${hairColor}"/>` : '';
-  const mustacheShape = mustache ? `<rect x="78" y="118" width="44" height="10" rx="5" fill="${hairColor}"/>` : '';
-  const glassesShape = glasses ? `<g stroke="#2b2118" stroke-width="4" fill="rgba(255,255,255,0.15)"><circle cx="75" cy="100" r="17"/><circle cx="125" cy="100" r="17"/><line x1="92" y1="100" x2="108" y2="100"/><line x1="58" y1="98" x2="45" y2="94"/><line x1="142" y1="98" x2="155" y2="94"/></g>` : '';
-  const earringShape = earrings ? `<circle cx="45" cy="112" r="4" fill="#c8a13a"/><circle cx="155" cy="112" r="4" fill="#c8a13a"/>` : '';
-  const frecklesShape = freckles ? `<g fill="rgba(120,70,40,0.5)"><circle cx="68" cy="112" r="1.6"/><circle cx="75" cy="116" r="1.6"/><circle cx="82" cy="110" r="1.6"/><circle cx="118" cy="110" r="1.6"/><circle cx="125" cy="116" r="1.6"/><circle cx="132" cy="112" r="1.6"/></g>` : '';
-  const scarfShape = scarf ? `<rect x="45" y="150" width="110" height="22" rx="8" fill="#a8371f"/>` : '';
-  const mouth = smiling
-    ? `<path d="M78 128 Q100 145 122 128" stroke="#5b2f22" stroke-width="4" fill="none" stroke-linecap="round"/>`
-    : `<rect x="82" y="128" width="36" height="5" rx="2.5" fill="#5b2f22"/>`;
-
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <rect width="200" height="200" fill="${bg}"/>
-    <ellipse cx="100" cy="115" rx="58" ry="66" fill="${skin}"/>
-    <circle cx="45" cy="118" r="10" fill="${skin}"/>
-    <circle cx="155" cy="118" r="10" fill="${skin}"/>
-    ${earringShape}
-    ${beardShape}
-    <ellipse cx="72" cy="98" rx="6" ry="8" fill="#2b2118"/>
-    <ellipse cx="128" cy="98" rx="6" ry="8" fill="#2b2118"/>
-    <path d="M58 82 Q72 72 86 82" stroke="#2b2118" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M114 82 Q128 72 142 82" stroke="#2b2118" stroke-width="3" fill="none" stroke-linecap="round"/>
-    ${frecklesShape}
-    ${mouth}
-    ${mustacheShape}
-    ${glassesShape}
-    ${scarfShape}
-    ${hairShape}
-    ${hatShape}
-  </svg>`;
-
-  return { photo: 'data:image/svg+xml;utf8,' + encodeURIComponent(svg), tags };
+  return copia;
 }
 
-const DEFAULT_NAMES = ['Ana','Bruno','Carla','Diego','Elisa','Fábio','Gabriela','Hugo','Isabela','João','Karla','Lucas','Marina','Nando','Olívia','Pedro','Quésia','Rafael','Sofia','Tiago','Umberto','Vitória','Wagner','Yasmin'];
-function buildDefaultCatalog(){
-  return DEFAULT_NAMES.map((name, i) => {
-    const av = generateAvatar(name + '-' + i);
-    return { id: 'd' + i, name, photo: av.photo, tags: av.tags };
+// Monta o texto da semente a partir do código digitado, dos baralhos
+// selecionados (ordenados, pra não depender da ordem de clique) e da rodada.
+function montarTextoDaSemente() {
+  const codigo = codigoInput.value.trim().toUpperCase();
+  const idsBaralhos = [...baralhosSelecionados].sort().join(",");
+  return `${codigo}|${idsBaralhos}|rodada${rodada}`;
+}
+
+/* ============================================================
+   TELA 1 — RENDERIZAÇÃO E SELEÇÃO DE BARALHOS
+   ============================================================ */
+function renderizarBaralhos() {
+  deckGrid.innerHTML = "";
+
+  baralhos.forEach(baralho => {
+    const card = document.createElement("article");
+    card.className = "deck-card";
+    card.dataset.deckId = baralho.id;
+    if (baralhosSelecionados.has(baralho.id)) card.classList.add("selecionado");
+
+    const preview = baralho.personagens.slice(0, 5);
+    const restante = baralho.personagens.length - preview.length;
+
+    card.innerHTML = `
+      <div class="deck-top">
+        <div>
+          <p class="deck-nome">${baralho.nome}</p>
+          <p class="deck-count">${baralho.personagens.length} suspeitos</p>
+        </div>
+        <div class="deck-check"></div>
+      </div>
+      <div class="deck-avatars">
+        ${preview.map(p => `<img src="${p.imagem}" alt="${p.nome}">`).join("")}
+        ${restante > 0 ? `<span class="deck-extra">+${restante}</span>` : ""}
+      </div>
+    `;
+
+    card.addEventListener("click", () => alternarSelecaoBaralho(baralho.id, card));
+    deckGrid.appendChild(card);
   });
+
+  atualizarResumoSelecao();
 }
 
-/* =========================================================================
-   IMAGEM: redimensionar upload do usuário
-========================================================================= */
-function resizeImage(file, maxDim, quality){
-  maxDim = maxDim || 220; quality = quality || 0.75;
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        let w = img.width, h = img.height;
-        if (w > h) { if (w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; } }
-        else { if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; } }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-function saveCatalogLocal(){ try { sessionStorage.setItem('cc_catalog', JSON.stringify(local.catalog)); } catch(e){} }
-function loadCatalogLocal(){ try { const raw = sessionStorage.getItem('cc_catalog'); if (raw) return JSON.parse(raw); } catch(e){} return null; }
-
-/* =========================================================================
-   ESTADO DA APLICAÇÃO
-========================================================================= */
-const local = {
-  screen: firebaseReady ? 'home' : 'setup',
-  myId: sessionGet('cc_myid') || uid(8),
-  myName: sessionGet('cc_myname') || '',
-  roomCode: sessionGet('cc_room') || '',
-  catalog: loadCatalogLocal() || buildDefaultCatalog(),
-  ce: { name: '', tags: '', photo: null, editingId: null },
-  ceImportError: '',
-  createError: '',
-  joinError: '',
-  startError: '',
-  selectedOpponent: null,
-  localFlips: {}
-};
-sessionSet('cc_myid', local.myId);
-
-let room = null;
-let roomRef = null;
-
-/* =========================================================================
-   RENDERIZAÇÃO (com preservação de foco em inputs)
-========================================================================= */
-const screens = { setup: renderSetup, home: renderHome, catalog: renderCatalogEditor, lobby: renderLobby, game: renderGame, end: renderEnd };
-
-function update(){
-  const ae = document.activeElement;
-  let savedId = null, savedVal = null, savedStart = null, savedEnd = null;
-  if (ae && ae.id && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) {
-    savedId = ae.id; savedVal = ae.value;
-    try { savedStart = ae.selectionStart; savedEnd = ae.selectionEnd; } catch(e){}
-  }
-  document.getElementById('app').innerHTML = (screens[local.screen] || renderHome)();
-  if (savedId) {
-    const el = document.getElementById(savedId);
-    if (el) {
-      el.value = savedVal;
-      el.focus();
-      if (savedStart != null) { try { el.setSelectionRange(savedStart, savedEnd); } catch(e){} }
-    }
-  }
-}
-
-/* =========================================================================
-   NAVEGAÇÃO
-========================================================================= */
-function goHome(){
-  if (roomRef) { roomRef.off(); roomRef = null; }
-  room = null;
-  local.roomCode = '';
-  sessionSet('cc_room', '');
-  local.screen = 'home';
-  update();
-}
-function openCatalogEditor(){
-  local.ce = { name: '', tags: '', photo: null, editingId: null };
-  local.ceImportError = '';
-  local.screen = 'catalog';
-  update();
-}
-
-/* =========================================================================
-   EDITOR DE CATÁLOGO
-========================================================================= */
-function ceEdit(id){
-  const c = local.catalog.find(x => x.id === id);
-  if (!c) return;
-  local.ce = { name: c.name, tags: (c.tags || []).join(', '), photo: c.photo, editingId: id };
-  update();
-}
-function ceCancel(){
-  local.ce = { name: '', tags: '', photo: null, editingId: null };
-  update();
-}
-function cePhotoChange(input){
-  const file = input.files && input.files[0];
-  if (!file) return;
-  resizeImage(file, 220, 0.75).then(dataUrl => {
-    local.ce.photo = dataUrl;
-    const prev = document.getElementById('ce-preview');
-    if (prev) prev.src = dataUrl;
-  });
-}
-function ceSave(){
-  const nameEl = document.getElementById('ce-name');
-  const tagsEl = document.getElementById('ce-tags');
-  const name = (nameEl.value || '').trim();
-  if (!name) return;
-  const tags = (tagsEl.value || '').split(',').map(s => s.trim()).filter(Boolean);
-  let photo = local.ce.photo;
-  if (!photo) photo = generateAvatar(name + Date.now()).photo;
-  if (local.ce.editingId) {
-    const c = local.catalog.find(x => x.id === local.ce.editingId);
-    if (c) { c.name = name; c.tags = tags; c.photo = photo; }
+function alternarSelecaoBaralho(deckId, cardEl) {
+  if (baralhosSelecionados.has(deckId)) {
+    baralhosSelecionados.delete(deckId);
+    cardEl.classList.remove("selecionado");
   } else {
-    local.catalog.push({ id: 'u' + uid(6), name, tags, photo });
+    baralhosSelecionados.add(deckId);
+    cardEl.classList.add("selecionado");
   }
-  local.ce = { name: '', tags: '', photo: null, editingId: null };
-  saveCatalogLocal();
-  update();
-}
-function ceDelete(id){
-  local.catalog = local.catalog.filter(c => c.id !== id);
-  saveCatalogLocal();
-  update();
-}
-function ceResetDefault(){
-  local.catalog = buildDefaultCatalog();
-  saveCatalogLocal();
-  update();
-}
-function ceExport(){
-  const blob = new Blob([JSON.stringify(local.catalog, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'catalogo-cara-a-cara.json'; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-function ceImport(input){
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) throw new Error('formato inválido');
-      const clean = data.filter(c => c && c.name && c.photo).map(c => ({
-        id: c.id || ('u' + uid(6)),
-        name: String(c.name),
-        photo: String(c.photo),
-        tags: Array.isArray(c.tags) ? c.tags.map(String) : []
-      }));
-      if (clean.length === 0) throw new Error('nenhum personagem válido encontrado');
-      local.catalog = clean;
-      saveCatalogLocal();
-      local.ceImportError = '';
-    } catch(err) {
-      local.ceImportError = 'Não foi possível importar: ' + err.message;
-    }
-    update();
-  };
-  reader.readAsText(file);
+  atualizarResumoSelecao();
 }
 
-/* =========================================================================
-   SALA / MULTIPLAYER
-========================================================================= */
-function attachRoom(code){
-  if (roomRef) roomRef.off();
-  roomRef = db.ref('rooms/' + code);
-  roomRef.on('value', snap => {
-    room = snap.val();
-    if (room) {
-      local.screen = room.phase === 'playing' ? 'game' : (room.phase === 'ended' ? 'end' : 'lobby');
-    }
-    update();
-  });
+function atualizarResumoSelecao() {
+  const totalDisponivel = baralhos
+    .filter(b => baralhosSelecionados.has(b.id))
+    .reduce((soma, b) => soma + b.personagens.length, 0);
+
+  if (baralhosSelecionados.size === 0) {
+    selectionSummaryText.textContent = "Nenhum baralho selecionado.";
+    startGameBtn.disabled = true;
+    return;
+  }
+
+  const vaiCortar = totalDisponivel > LIMITE_EM_JOGO;
+  const emJogo = Math.min(totalDisponivel, LIMITE_EM_JOGO);
+
+  selectionSummaryText.innerHTML = vaiCortar
+    ? `${totalDisponivel} suspeitos disponíveis — <span class="selection-warning">apenas ${LIMITE_EM_JOGO} entrarão em jogo</span> (sorteados a partir do código).`
+    : `${emJogo} suspeitos entrarão em jogo.`;
+
+  startGameBtn.disabled = false;
 }
-function generateUniqueCode(tries){
-  tries = tries == null ? 5 : tries;
-  const code = uid(5);
-  return db.ref('rooms/' + code).get().then(snap => (snap.exists() && tries > 0) ? generateUniqueCode(tries - 1) : code);
+
+/* ============================================================
+   CÓDIGO DA PARTIDA E LINK DE CONVITE
+   ============================================================ */
+function gerarCodigoAleatorio() {
+  const alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sem letras/números fáceis de confundir
+  let codigo = "";
+  for (let i = 0; i < 6; i++) {
+    codigo += alfabeto[Math.floor(Math.random() * alfabeto.length)];
+  }
+  codigoInput.value = codigo;
+  mostrarFeedbackSync("Código gerado! Compartilhe com quem vai jogar com você.");
 }
-function createRoom(){
-  const nameEl = document.getElementById('create-name');
-  const name = (nameEl.value || '').trim();
-  local.createError = '';
-  if (!name) { local.createError = 'Digite seu nome.'; update(); return; }
-  if (!firebaseReady) { local.createError = 'Configure o Firebase primeiro (veja o README).'; update(); return; }
-  if (local.catalog.length < 4) { local.createError = 'Seu catálogo precisa ter pelo menos 4 personagens.'; update(); return; }
-  generateUniqueCode().then(code => {
-    local.myName = name; sessionSet('cc_myname', name);
-    local.roomCode = code; sessionSet('cc_room', code);
-    const roomData = {
-      hostId: local.myId,
-      phase: 'lobby',
-      catalog: local.catalog,
-      players: { [local.myId]: { name, alive: true, connected: true, secretId: null } },
-      joinOrder: [local.myId],
-      turnOrder: null,
-      currentTurn: null,
-      awaiting: null,
-      log: null,
-      winner: null,
-      createdAt: Date.now()
-    };
-    return db.ref('rooms/' + code).set(roomData).then(() => {
-      attachRoom(code);
-      db.ref('rooms/' + code + '/players/' + local.myId + '/connected').onDisconnect().set(false);
+
+function montarLinkConvite() {
+  const url = new URL(window.location.href);
+  url.hash = "";
+  const params = new URLSearchParams();
+  if (codigoInput.value.trim()) params.set("codigo", codigoInput.value.trim().toUpperCase());
+  if (baralhosSelecionados.size > 0) params.set("baralhos", [...baralhosSelecionados].join(","));
+  url.search = params.toString();
+  return url.toString();
+}
+
+async function copiarLinkConvite() {
+  if (!codigoInput.value.trim()) {
+    mostrarFeedbackSync("Gere ou digite um código antes de copiar o link.");
+    return;
+  }
+  const link = montarLinkConvite();
+  try {
+    await navigator.clipboard.writeText(link);
+    mostrarFeedbackSync("Link copiado! Envie para o outro jogador.");
+  } catch (erro) {
+    mostrarFeedbackSync("Não deu para copiar automaticamente. Link: " + link);
+  }
+}
+
+function mostrarFeedbackSync(mensagem) {
+  syncFeedback.textContent = mensagem;
+}
+
+// Ao abrir a página com um link de convite (?codigo=...&baralhos=...),
+// preenche o código e já marca os mesmos baralhos do convite.
+function aplicarParametrosDaUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const codigo = params.get("codigo");
+  const baralhosParam = params.get("baralhos");
+
+  if (codigo) codigoInput.value = codigo.toUpperCase();
+
+  if (baralhosParam) {
+    baralhosParam.split(",").forEach(id => {
+      if (baralhos.some(b => b.id === id)) baralhosSelecionados.add(id);
     });
-  }).catch(err => { local.createError = 'Erro ao criar sala: ' + err.message; update(); });
+  }
 }
-function joinRoom(){
-  const codeEl = document.getElementById('join-code');
-  const nameEl = document.getElementById('join-name');
-  const code = (codeEl.value || '').trim().toUpperCase();
-  const name = (nameEl.value || '').trim();
-  local.joinError = '';
-  if (!code || !name) { local.joinError = 'Preencha o código da sala e seu nome.'; update(); return; }
-  if (!firebaseReady) { local.joinError = 'Configure o Firebase primeiro (veja o README).'; update(); return; }
-  const ref = db.ref('rooms/' + code);
-  ref.get().then(snap => {
-    if (!snap.exists()) { local.joinError = 'Sala não encontrada. Verifique o código.'; update(); return; }
-    const val = snap.val();
-    if (val.phase && val.phase !== 'lobby') { local.joinError = 'Esse jogo já começou. Peça ao host uma nova sala.'; update(); return; }
-    const players = val.players || {};
-    if (!players[local.myId] && Object.keys(players).length >= 6) { local.joinError = 'Sala cheia (máximo de 6 jogadores).'; update(); return; }
-    local.myName = name; sessionSet('cc_myname', name);
-    local.roomCode = code; sessionSet('cc_room', code);
-    attachRoom(code);
-    db.ref('rooms/' + code + '/players/' + local.myId).set({ name, alive: true, connected: true, secretId: null });
-    db.ref('rooms/' + code + '/players/' + local.myId + '/connected').onDisconnect().set(false);
-    db.ref('rooms/' + code + '/joinOrder').transaction(cur => {
-      cur = cur || [];
-      if (!cur.includes(local.myId)) cur.push(local.myId);
-      return cur;
+
+/* ============================================================
+   INÍCIO DA PARTIDA
+   ------------------------------------------------------------
+   Junta os personagens dos baralhos escolhidos e embaralha usando
+   a semente (código + baralhos + rodada). Como a semente é igual
+   nos dois navegadores, os dois jogadores recebem exatamente o
+   mesmo QUADRO de 30 suspeitos.
+
+   O personagem misterioso, porém, é sorteado com Math.random()
+   de verdade (sem semente) — de propósito. Se usasse a mesma
+   semente, os dois jogadores cairiam sempre no mesmo suspeito
+   secreto, o que não faz sentido no Cara a Cara: cada jogador
+   precisa ter o SEU PRÓPRIO segredo, diferente do da outra
+   pessoa, mesmo estando no mesmo quadro de suspeitos.
+   ============================================================ */
+function montarPersonagensDaPartida() {
+  const personagensDosBaralhos = baralhos
+    .filter(b => baralhosSelecionados.has(b.id))
+    .flatMap(b => b.personagens);
+
+  const textoSemente = montarTextoDaSemente();
+  const rng = criarGeradorComSemente(textoSemente);
+
+  // Embaralha e corta em 30 — o corte usa o rng com semente, então
+  // mesmo código = mesmos 30 (ou menos) suspeitos nos dois navegadores.
+  personagensEmJogo = embaralhar(personagensDosBaralhos, rng).slice(0, LIMITE_EM_JOGO);
+
+  // Sorteia o personagem misterioso com aleatoriedade real (Math.random,
+  // sem semente) — cada jogador recebe um segredo próprio, mesmo com o
+  // mesmo código e o mesmo quadro de suspeitos.
+  const indiceMisterio = Math.floor(Math.random() * personagensEmJogo.length);
+  personagemSorteado = personagensEmJogo[indiceMisterio];
+  revelado = false;
+}
+
+function iniciarPartida() {
+  rodada = 1;
+  montarPersonagensDaPartida();
+
+  const nomesBaralhos = baralhos
+    .filter(b => baralhosSelecionados.has(b.id))
+    .map(b => b.nome)
+    .join(", ");
+  deckSummaryText.textContent = `Baralhos em jogo: ${nomesBaralhos}.`;
+
+  const codigo = codigoInput.value.trim().toUpperCase();
+  if (codigo) {
+    matchCodeTag.textContent = `Código: ${codigo} · Rodada ${rodada}`;
+    matchCodeTag.hidden = false;
+  } else {
+    matchCodeTag.hidden = true;
+  }
+
+  screenBaralhos.hidden = true;
+  screenJogo.hidden = false;
+
+  renderizarPersonagens();
+  atualizarTelaDoMisterio();
+}
+
+/* ============================================================
+   RENDERIZAÇÃO DO CATÁLOGO (TELA 2)
+   ------------------------------------------------------------
+   Lê "personagensEmJogo" (já montado a partir dos baralhos
+   escolhidos) e desenha um card para cada pessoa dentro da
+   grid (#charactersGrid).
+   ============================================================ */
+function renderizarPersonagens() {
+  grid.innerHTML = "";
+
+  personagensEmJogo.forEach((pessoa, index) => {
+    const card = document.createElement("article");
+    card.className = `card r${index % 5}`; // pequenas rotações alternadas (ver CSS)
+    card.dataset.id = pessoa.id;
+
+    card.innerHTML = `
+      <div class="pin"></div>
+      <div class="photo-frame">
+        <img src="${pessoa.imagem}" alt="${pessoa.nome}">
+        <div class="stamp">DESCARTADO</div>
+      </div>
+      <p class="card-name">${pessoa.nome}</p>
+    `;
+
+    card.addEventListener("click", () => {
+      card.classList.toggle("descartado");
+      atualizarContador();
     });
-  }).catch(err => { local.joinError = 'Erro ao entrar: ' + err.message; update(); });
-}
-function copyRoomCode(){ try { navigator.clipboard.writeText(local.roomCode); } catch(e){} }
 
-/* =========================================================================
-   LÓGICA DA PARTIDA
-========================================================================= */
-function nextAliveAfter(turnOrder, players, currentPid, forcedDeadId){
-  const n = turnOrder.length;
-  const idx = turnOrder.indexOf(currentPid);
-  for (let step = 1; step <= n; step++) {
-    const cand = turnOrder[(idx + step) % n];
-    if (cand === forcedDeadId) continue;
-    const p = players[cand];
-    if (p && p.alive !== false) return cand;
-  }
-  return currentPid;
-}
-function startGame(){
-  if (!room || room.hostId !== local.myId) return;
-  const joinOrder = room.joinOrder || [];
-  const players = room.players || {};
-  const activeIds = joinOrder.filter(pid => players[pid]);
-  if (activeIds.length < 2) { local.startError = 'É preciso pelo menos 2 jogadores.'; update(); return; }
-  const catalog = room.catalog || [];
-  if (catalog.length < activeIds.length) {
-    local.startError = 'O catálogo precisa ter pelo menos ' + activeIds.length + ' personagens para ' + activeIds.length + ' jogadores.';
-    update(); return;
-  }
-  local.startError = '';
-  const pool = catalog.map(c => c.id);
-  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-  const updates = { phase: 'playing', turnOrder: activeIds, currentTurn: activeIds[0], awaiting: null, log: null, winner: null };
-  activeIds.forEach((pid, i) => { updates['players/' + pid + '/secretId'] = pool[i]; updates['players/' + pid + '/alive'] = true; });
-  db.ref('rooms/' + local.roomCode).update(updates).then(() => {
-    db.ref('rooms/' + local.roomCode + '/log').push({ type: 'system', text: 'A partida começou! ' + activeIds.length + ' detetives em campo.', ts: Date.now() });
+    grid.appendChild(card);
   });
-}
-function selectOpponent(pid){ local.selectedOpponent = pid; update(); }
-function toggleFlip(charId){
-  const opp = local.selectedOpponent;
-  if (!opp) return;
-  if (!local.localFlips[opp]) local.localFlips[opp] = new Set();
-  const set = local.localFlips[opp];
-  if (set.has(charId)) set.delete(charId); else set.add(charId);
-  update();
-}
-function askQuestion(){
-  if (!room || room.currentTurn !== local.myId || room.awaiting) return;
-  const targetSel = document.getElementById('ask-target');
-  const textEl = document.getElementById('ask-text');
-  const targetId = targetSel.value;
-  const text = (textEl.value || '').trim();
-  if (!targetId || !text) return;
-  const logRef = db.ref('rooms/' + local.roomCode + '/log').push();
-  logRef.set({ type: 'question', from: local.myId, to: targetId, text, answered: false, ts: Date.now() }).then(() => {
-    db.ref('rooms/' + local.roomCode + '/awaiting').set({ logKey: logRef.key, from: local.myId, to: targetId });
-  });
-}
-function answerQuestion(ans){
-  if (!room || !room.awaiting || room.awaiting.to !== local.myId) return;
-  const logKey = room.awaiting.logKey;
-  const nextTurn = nextAliveAfter(room.turnOrder, room.players, room.currentTurn, null);
-  const updates = {};
-  updates['log/' + logKey + '/answer'] = ans;
-  updates['log/' + logKey + '/answered'] = true;
-  updates['awaiting'] = null;
-  updates['currentTurn'] = nextTurn;
-  db.ref('rooms/' + local.roomCode).update(updates);
-}
-function submitGuess(){
-  if (!room || room.currentTurn !== local.myId || room.awaiting) return;
-  const targetSel = document.getElementById('guess-target');
-  const charSel = document.getElementById('guess-char');
-  const targetId = targetSel.value;
-  const charId = charSel.value;
-  if (!targetId || !charId) return;
-  const targetPlayer = room.players[targetId];
-  const correct = targetPlayer.secretId === charId;
-  const logRef = db.ref('rooms/' + local.roomCode + '/log').push();
-  const updates = {};
-  updates['log/' + logRef.key] = { type: 'guess', from: local.myId, to: targetId, characterId: charId, correct, ts: Date.now() };
-  let winnerId = null;
-  if (correct) {
-    updates['players/' + targetId + '/alive'] = false;
-    const aliveLeft = room.turnOrder.filter(pid => pid === targetId ? false : (room.players[pid].alive !== false));
-    if (aliveLeft.length === 1) {
-      winnerId = aliveLeft[0];
-      updates['phase'] = 'ended';
-      updates['winner'] = winnerId;
-      updates['awaiting'] = null;
-    }
-  }
-  if (!winnerId) {
-    updates['currentTurn'] = nextAliveAfter(room.turnOrder, room.players, room.currentTurn, correct ? targetId : null);
-    updates['awaiting'] = null;
-  }
-  db.ref('rooms/' + local.roomCode).update(updates);
+
+  atualizarContador();
 }
 
-/* =========================================================================
-   TEMPLATES / TELAS
-========================================================================= */
-function renderSetup(){
-  return `
-  <div class="center-wrap">
-    <div class="paper-panel setup-panel">
-      <h1 class="brand">CARA A CARA <span>ONLINE</span></h1>
-      <p class="mono small" style="margin-top:10px;">CONFIGURAÇÃO NECESSÁRIA</p>
-      <p style="margin-top:10px;">Para jogar online, este jogo precisa de um banco de dados gratuito (Firebase) para sincronizar as salas entre os jogadores.</p>
-      <ol class="setup-steps">
-        <li>Acesse <b>console.firebase.google.com</b> e crie um projeto grátis.</li>
-        <li>No menu lateral, abra <b>Realtime Database</b> → <b>Criar banco de dados</b> → inicie em <b>modo de teste</b>.</li>
-        <li>Vá em <b>Configurações do projeto</b> (ícone de engrenagem) → "Seus apps" → clique no ícone <b>&lt;/&gt;</b> para criar um app da Web.</li>
-        <li>Copie o objeto <code>firebaseConfig</code> gerado.</li>
-        <li>Abra o arquivo <code>index.html</code> deste jogo em um editor de texto e cole os valores na constante <code>firebaseConfig</code>, perto do início do &lt;script&gt;.</li>
-        <li>Salve o arquivo e recarregue esta página.</li>
-      </ol>
-      <p class="mono small">Dica: nas regras do Realtime Database, use <code>{"rules": {".read": true, ".write": true}}</code> para jogar com amigos rapidamente (não recomendado para deixar público na internet por muito tempo).</p>
-      <p class="mono small">Detalhes completos no arquivo README.md.</p>
-    </div>
-  </div>`;
+function atualizarContador() {
+  const total = personagensEmJogo.length;
+  const descartados = document.querySelectorAll(".card.descartado").length;
+  countTotalEl.textContent = total;
+  countActiveEl.textContent = total - descartados;
 }
 
-function renderHome(){
-  return `
-  <div class="wrap">
-    <header class="topbar">
-      <div>
-        <h1 class="brand">CARA A CARA <span>ONLINE</span></h1>
-        <p class="subtitle">Um jogo de dedução para 2 a 6 detetives</p>
-      </div>
-    </header>
-    <div class="home-grid">
-      <div class="paper-panel">
-        <h2 class="panel-title">Criar uma sala</h2>
-        <p class="hint">Catálogo atual: <b>${local.catalog.length} personagens</b> · <a href="#" onclick="openCatalogEditor();return false;">editar catálogo</a></p>
-        <label class="field-label">Seu nome</label>
-        <input id="create-name" class="text-input" type="text" maxlength="20" placeholder="Ex: Ana" value="${esc(local.myName)}">
-        ${local.createError ? `<p class="error-text">${esc(local.createError)}</p>` : ''}
-        <button class="btn btn-primary" onclick="createRoom()">Criar sala</button>
-      </div>
-      <div class="paper-panel">
-        <h2 class="panel-title">Entrar em uma sala</h2>
-        <label class="field-label">Código da sala</label>
-        <input id="join-code" class="text-input mono" type="text" maxlength="6" placeholder="Ex: X7K2P" value="${esc(local.roomCode)}" style="text-transform:uppercase">
-        <label class="field-label">Seu nome</label>
-        <input id="join-name" class="text-input" type="text" maxlength="20" placeholder="Ex: Bruno" value="${esc(local.myName)}">
-        ${local.joinError ? `<p class="error-text">${esc(local.joinError)}</p>` : ''}
-        <button class="btn btn-secondary" onclick="joinRoom()">Entrar na sala</button>
-      </div>
-    </div>
-    <details class="how-to">
-      <summary>Como jogar</summary>
-      <ol>
-        <li>Cada jogador entra na mesma sala usando o código gerado pelo anfitrião (host).</li>
-        <li>Ao iniciar, cada jogador recebe em segredo um personagem do catálogo.</li>
-        <li>Na sua vez, escolha um oponente e faça uma pergunta de sim/não sobre o personagem secreto dele (ex: "seu personagem usa óculos?"), ou arrisque um chute dizendo quem é o personagem.</li>
-        <li>Use o quadro de suspeitos para marcar (clicar) quem você já descartou — essa marcação é só sua, os outros jogadores não veem.</li>
-        <li>Acertar um chute elimina o oponente da partida. O último detetive restante vence!</li>
-      </ol>
-    </details>
-    <footer class="mono small footnote">Cada jogador precisa abrir este mesmo site pelo seu próprio celular ou computador.</footer>
-  </div>`;
+/* ============================================================
+   PERSONAGEM MISTERIOSO
+   ============================================================ */
+function atualizarTelaDoMisterio() {
+  caseImage.hidden = true;
+  caseImage.src = "";
+  caseQuestionMark.style.display = "block";
+  caseName.textContent = "???";
+  revealBtn.disabled = false;
+  revealBtn.textContent = "Revelar suspeito";
 }
 
-function renderCatalogEditor(){
-  const c = local.ce;
-  return `
-  <div class="wrap">
-    <header class="topbar">
-      <button class="btn btn-ghost" onclick="goHome()">&larr; Voltar</button>
-      <h1 class="brand small-brand">CATÁLOGO DE SUSPEITOS</h1>
-    </header>
-    <div class="catalog-toolbar">
-      <button class="btn btn-secondary" onclick="ceExport()">Exportar catálogo</button>
-      <label class="btn btn-secondary file-btn">Importar catálogo<input type="file" accept="application/json" onchange="ceImport(this)" hidden></label>
-      <button class="btn btn-danger" onclick="ceResetDefault()">Restaurar padrão</button>
-    </div>
-    ${local.ceImportError ? `<p class="error-text">${esc(local.ceImportError)}</p>` : ''}
-    <div class="ce-form paper-panel">
-      <h2 class="panel-title">${c.editingId ? 'Editar suspeito' : 'Novo suspeito'}</h2>
-      <div class="ce-form-grid">
-        <div class="ce-photo-col">
-          <img id="ce-preview" class="ce-preview" src="${c.photo || TRANSPARENT_PX}" alt="Prévia">
-          <label class="btn btn-secondary file-btn small">Enviar foto<input type="file" accept="image/*" onchange="cePhotoChange(this)" hidden></label>
-        </div>
-        <div class="ce-fields-col">
-          <label class="field-label">Nome</label>
-          <input id="ce-name" class="text-input" type="text" maxlength="24" value="${esc(c.name)}" placeholder="Nome do suspeito">
-          <label class="field-label">Características (separadas por vírgula)</label>
-          <input id="ce-tags" class="text-input" type="text" value="${esc(c.tags)}" placeholder="usa óculos, careca, tem barba">
-          <div class="ce-actions">
-            <button class="btn btn-primary" onclick="ceSave()">${c.editingId ? 'Salvar alterações' : 'Adicionar ao catálogo'}</button>
-            ${c.editingId ? `<button class="btn btn-ghost" onclick="ceCancel()">Cancelar</button>` : ''}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="dossier-grid">
-      ${local.catalog.map(ch => `
-        <div class="dossier-card">
-          <img src="${ch.photo}" class="dossier-photo" alt="${esc(ch.name)}">
-          <div class="dossier-name">${esc(ch.name)}</div>
-          <div class="dossier-tags">${(ch.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-          <div class="dossier-edit-actions">
-            <button class="btn btn-ghost tiny" onclick="ceEdit('${ch.id}')">Editar</button>
-            <button class="btn btn-danger tiny" onclick="ceDelete('${ch.id}')">Excluir</button>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  </div>`;
+function revelarPersonagem() {
+  if (!personagemSorteado || revelado) return;
+
+  caseImage.src = personagemSorteado.imagem;
+  caseImage.hidden = false;
+  caseQuestionMark.style.display = "none";
+  caseName.textContent = personagemSorteado.nome;
+  revealBtn.disabled = true;
+  revealBtn.textContent = "Suspeito revelado";
+  revelado = true;
 }
 
-function renderRoomLost(){
-  return `
-  <div class="center-wrap">
-    <div class="paper-panel">
-      <h2 class="panel-title">Sala não encontrada</h2>
-      <p>Essa sala foi encerrada ou não existe mais.</p>
-      <button class="btn btn-primary" onclick="goHome()">Voltar ao início</button>
-    </div>
-  </div>`;
+// Novo caso: mesmos baralhos e código, mas avança a rodada — gera uma
+// nova combinação determinística (os dois jogadores precisam clicar
+// "Novo caso" juntos para continuarem sincronizados).
+function novoJogo() {
+  rodada += 1;
+  montarPersonagensDaPartida();
+  renderizarPersonagens();
+  atualizarTelaDoMisterio();
+
+  const codigo = codigoInput.value.trim().toUpperCase();
+  if (codigo) matchCodeTag.textContent = `Código: ${codigo} · Rodada ${rodada}`;
 }
 
-function renderLobby(){
-  if (!room) return renderRoomLost();
-  const players = (room.joinOrder || []).map(pid => ({ pid, ...(room.players[pid] || {}) }));
-  const isHost = room.hostId === local.myId;
-  return `
-  <div class="wrap">
-    <header class="topbar"><h1 class="brand small-brand">SALA DE ESPERA</h1></header>
-    <div class="paper-panel lobby-panel">
-      <p class="hint">Código da sala</p>
-      <div class="room-code-display">
-        <span class="mono room-code">${esc(local.roomCode)}</span>
-        <button class="btn btn-ghost tiny" onclick="copyRoomCode()">Copiar</button>
-      </div>
-      <p class="hint">Compartilhe este código com seus amigos. Eles precisam abrir este mesmo site e clicar em "Entrar em uma sala".</p>
-      <p class="hint">Catálogo desta partida: ${(room.catalog || []).length} personagens</p>
-      <h2 class="panel-title">Detetives na sala (${players.length}/6)</h2>
-      <ul class="player-list">
-        ${players.map(p => `<li class="${p.connected === false ? 'offline' : ''}">${esc(p.name)}${p.pid === room.hostId ? '<span class="badge">HOST</span>' : ''}${p.connected === false ? '<span class="badge muted">desconectado</span>' : ''}</li>`).join('')}
-      </ul>
-      ${local.startError ? `<p class="error-text">${esc(local.startError)}</p>` : ''}
-      ${isHost
-        ? `<button class="btn btn-primary" ${players.length < 2 ? 'disabled' : ''} onclick="startGame()">Iniciar jogo</button>`
-        : `<p class="mono small">Aguardando o host iniciar a partida...</p>`}
-      <button class="btn btn-ghost" onclick="goHome()">Sair da sala</button>
-    </div>
-  </div>`;
+// Volta para a tela de seleção de baralhos (mantém baralhos e código)
+function trocarBaralhos() {
+  screenJogo.hidden = true;
+  screenBaralhos.hidden = false;
 }
 
-function renderLogEntry(e){
-  if (e.type === 'system') return `<p class="log-line system">» ${esc(e.text)}</p>`;
-  const fromName = esc((room.players[e.from] || {}).name || '?');
-  const toName = esc((room.players[e.to] || {}).name || '?');
-  if (e.type === 'question') {
-    if (!e.answered) return `<p class="log-line">${fromName} perguntou a ${toName}: "${esc(e.text)}" <span class="dim">(aguardando resposta)</span></p>`;
-    return `<p class="log-line">${fromName} perguntou a ${toName}: "${esc(e.text)}" — <b class="${e.answer ? 'ok' : 'no'}">${e.answer ? 'SIM' : 'NÃO'}</b></p>`;
-  }
-  if (e.type === 'guess') {
-    const catalog = room.catalog || [];
-    const charName = esc((catalog.find(c => c.id === e.characterId) || {}).name || '???');
-    return `<p class="log-line">${fromName} chutou que ${toName} é <b>${charName}</b> — <b class="${e.correct ? 'ok' : 'no'}">${e.correct ? 'ACERTOU!' : 'ERROU'}</b></p>`;
-  }
-  return '';
-}
+/* ============================================================
+   EVENTOS E INICIALIZAÇÃO
+   ============================================================ */
+startGameBtn.addEventListener("click", iniciarPartida);
+revealBtn.addEventListener("click", revelarPersonagem);
+resetBtn.addEventListener("click", novoJogo);
+changeDeckBtn.addEventListener("click", trocarBaralhos);
+gerarCodigoBtn.addEventListener("click", gerarCodigoAleatorio);
+copiarLinkBtn.addEventListener("click", copiarLinkConvite);
 
-function renderActionPanel(isMyTurn, awaiting, iAmAnswering, aliveOpponents, catalog){
-  if (iAmAnswering) {
-    const q = room.log[awaiting.logKey];
-    return `
-      <p class="mono small">${esc((room.players[awaiting.from] || {}).name || '?')} pergunta:</p>
-      <p class="question-text">"${esc(q.text)}"</p>
-      <div class="ce-actions">
-        <button class="btn btn-primary" onclick="answerQuestion(true)">Sim</button>
-        <button class="btn btn-danger" onclick="answerQuestion(false)">Não</button>
-      </div>`;
-  }
-  if (!isMyTurn) {
-    if (awaiting) return `<p class="mono small dim">Aguardando ${esc((room.players[awaiting.to] || {}).name || '?')} responder...</p>`;
-    return `<p class="mono small dim">Aguarde sua vez. Use o quadro acima para marcar seus palpites.</p>`;
-  }
-  if (aliveOpponents.length === 0) return `<p class="mono small dim">Não há oponentes disponíveis.</p>`;
-  return `
-    <div class="action-cols">
-      <div class="action-col">
-        <h4 class="panel-title small">Fazer uma pergunta</h4>
-        <select id="ask-target" class="text-input">${aliveOpponents.map(o => `<option value="${o.pid}">${esc(o.name)}</option>`).join('')}</select>
-        <input id="ask-text" class="text-input" type="text" maxlength="120" placeholder="Ex: seu personagem usa óculos?">
-        <button class="btn btn-secondary" onclick="askQuestion()">Perguntar</button>
-      </div>
-      <div class="action-col">
-        <h4 class="panel-title small">Fazer o chute final</h4>
-        <select id="guess-target" class="text-input">${aliveOpponents.map(o => `<option value="${o.pid}">${esc(o.name)}</option>`).join('')}</select>
-        <select id="guess-char" class="text-input">${catalog.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
-        <button class="btn btn-primary" onclick="submitGuess()">Chutar!</button>
-      </div>
-    </div>`;
-}
-
-function renderGame(){
-  if (!room) return renderRoomLost();
-  const catalog = room.catalog || [];
-  const players = (room.turnOrder || []).map(pid => ({ pid, ...(room.players[pid] || {}) }));
-  const me = room.players[local.myId] || {};
-  const myChar = catalog.find(c => c.id === me.secretId);
-  const opponents = players.filter(p => p.pid !== local.myId);
-
-  if (!local.selectedOpponent || !opponents.find(o => o.pid === local.selectedOpponent)) {
-    const firstAlive = opponents.find(o => o.alive !== false);
-    local.selectedOpponent = firstAlive ? firstAlive.pid : (opponents[0] && opponents[0].pid);
-  }
-
-  const isMyTurn = room.currentTurn === local.myId;
-  const awaiting = room.awaiting;
-  const iAmAnswering = !!(awaiting && awaiting.to === local.myId);
-  const myFlips = local.localFlips[local.selectedOpponent] || new Set();
-  const aliveOpponents = opponents.filter(o => o.alive !== false);
-  const logEntries = room.log ? Object.entries(room.log).sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0)) : [];
-
-  return `
-  <div class="wrap game-wrap">
-    <header class="topbar game-topbar">
-      <h1 class="brand small-brand">CARA A CARA <span class="mono roomtag">#${esc(local.roomCode)}</span></h1>
-      <div class="turn-indicator ${isMyTurn ? 'my-turn' : ''}">${isMyTurn ? 'SUA VEZ' : 'VEZ DE ' + esc((room.players[room.currentTurn] || {}).name || '?')}</div>
-    </header>
-
-    <div class="players-strip">
-      ${players.map(p => `
-        <div class="player-chip ${p.pid === room.currentTurn ? 'active' : ''} ${p.alive === false ? 'dead' : ''} ${p.pid === local.myId ? 'me' : ''}">
-          <span class="dot ${p.connected === false ? 'off' : 'on'}"></span>
-          ${esc(p.name)}${p.pid === local.myId ? ' (você)' : ''}${p.alive === false ? ' ☠' : ''}
-        </div>`).join('')}
-    </div>
-
-    ${myChar ? `
-    <div class="my-secret-panel">
-      <span class="mono small">SEU PERSONAGEM SECRETO:</span>
-      <img src="${myChar.photo}" class="my-secret-photo" alt="${esc(myChar.name)}">
-      <span class="my-secret-name">${esc(myChar.name)}</span>
-    </div>` : ''}
-
-    <div class="opponent-tabs">
-      ${opponents.map(o => `<button class="tab-btn ${o.pid === local.selectedOpponent ? 'active' : ''} ${o.alive === false ? 'dead' : ''}" onclick="selectOpponent('${o.pid}')">${esc(o.name)}${o.alive === false ? ' ☠' : ''}</button>`).join('')}
-    </div>
-
-    <div class="dossier-grid game-grid">
-      ${catalog.map(ch => `
-        <div class="dossier-card small ${myFlips.has(ch.id) ? 'flipped' : ''}" onclick="toggleFlip('${ch.id}')">
-          <img src="${ch.photo}" class="dossier-photo" alt="${esc(ch.name)}">
-          <div class="dossier-name">${esc(ch.name)}</div>
-          <div class="dossier-tags">${(ch.tags || []).slice(0, 3).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-        </div>`).join('')}
-    </div>
-
-    <div class="action-panel paper-panel">
-      ${renderActionPanel(isMyTurn, awaiting, iAmAnswering, aliveOpponents, catalog)}
-    </div>
-
-    <div class="log-panel">
-      <h3 class="mono small log-title">CADERNO DE INTERROGATÓRIO</h3>
-      <div class="log-scroll">
-        ${logEntries.length === 0 ? `<p class="mono small dim">Nenhum evento ainda.</p>` : logEntries.map(([key, e]) => renderLogEntry(e)).join('')}
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderEnd(){
-  if (!room) return renderRoomLost();
-  const catalog = room.catalog || [];
-  const winner = room.players[room.winner] || {};
-  const isHost = room.hostId === local.myId;
-  const all = (room.turnOrder || Object.keys(room.players || {})).map(pid => ({ pid, ...(room.players[pid] || {}) }));
-  return `
-  <div class="center-wrap">
-    <div class="paper-panel end-panel">
-      <h1 class="brand">CASO ENCERRADO</h1>
-      <p class="winner-text">🏆 ${esc(winner.name || '?')} venceu a partida!</p>
-      <h2 class="panel-title">Revelação dos suspeitos</h2>
-      <div class="dossier-grid">
-        ${all.map(p => {
-          const c = catalog.find(x => x.id === p.secretId);
-          return `<div class="dossier-card small">
-            <img src="${c ? c.photo : TRANSPARENT_PX}" class="dossier-photo" alt="">
-            <div class="dossier-name">${esc(p.name)}</div>
-            <div class="dossier-tags"><span class="tag">era ${esc(c ? c.name : '?')}</span></div>
-          </div>`;
-        }).join('')}
-      </div>
-      ${isHost ? `<button class="btn btn-primary" onclick="startGame()">Jogar novamente</button>` : ''}
-      <button class="btn btn-ghost" onclick="goHome()">Sair para o início</button>
-    </div>
-  </div>`;
-}
-
-/* =========================================================================
-   INÍCIO
-========================================================================= */
-update();
+aplicarParametrosDaUrl();
+renderizarBaralhos();
 </script>
 </body>
 </html>
