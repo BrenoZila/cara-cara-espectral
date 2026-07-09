@@ -467,25 +467,35 @@ h1 {
 
    IMPORTANTE — COMO AS FOTOS SÃO CARREGADAS AGORA:
    Cada personagem só precisa de "id" e "nome". A foto NÃO fica
-   mais no código — ela é buscada automaticamente numa pasta
-   chamada "fotos", usando o NOME EXATO do personagem como nome
-   do arquivo. Exemplo: o personagem { id: 1, nome: "Cairo Wesley" }
-   vai procurar por um arquivo chamado:
+   mais no código — ela é buscada automaticamente dentro da pasta
+   "personagens", numa SUBPASTA para cada baralho, usando o NOME
+   EXATO do personagem como nome do arquivo.
 
-       fotos/Cairo Wesley.jpg   (ou .jpeg / .png / .webp)
+   A subpasta padrão de cada baralho é o próprio "id" dele, mas dá
+   pra usar um nome de pasta diferente com o campo opcional "pasta":
+
+     { id: "classicos", pasta: "E Pluribus unum", nome: "...", personagens: [...] }
+
+   Então o personagem { id: 1, nome: "Cairo Wesley" } desse baralho
+   vai procurar por um arquivo em:
+
+       personagens/E Pluribus unum/Cairo Wesley.jpg   (ou .jpeg / .png / .webp)
 
    Ou seja, para dar certo:
-   1) Crie uma pasta chamada "fotos" do lado do arquivo .html.
-   2) Salve cada foto dentro dela com o nome IDÊNTICO ao campo
-      "nome" do personagem (mesma capitalização, acentos e espaços).
-   3) Pode usar .jpg, .jpeg, .png ou .webp — o jogo tenta essas
+   1) Crie uma pasta chamada "personagens" do lado do arquivo .html.
+   2) Dentro dela, uma SUBPASTA para cada baralho (nome igual ao
+      campo "pasta", ou ao "id" se não houver "pasta").
+   3) Salve cada foto dentro da subpasta certa, com o nome IDÊNTICO
+      ao campo "nome" do personagem (mesma capitalização, acentos
+      e espaços).
+   4) Pode usar .jpg, .jpeg, .png ou .webp — o jogo tenta essas
       extensões nessa ordem, uma atrás da outra.
    Se nenhuma foto for encontrada, o jogo mostra um "crachá" com
    as iniciais do personagem no lugar (nunca fica quebrado).
    ============================================================ */
 
-// Pasta onde as fotos ficam salvas (relativa ao arquivo .html)
-const PASTA_FOTOS = "fotos/";
+// Pasta-mãe onde ficam as subpastas de cada baralho (relativa ao .html)
+const PASTA_FOTOS = "personagens/";
 // Ordem de extensões que o jogo tenta ao procurar a foto de alguém
 const EXTENSOES_SUPORTADAS = ["jpg", "jpeg", "png", "webp"];
 
@@ -526,20 +536,22 @@ function gerarAvatarSVG(nome) {
 
 // Monta o caminho do arquivo de foto para uma tentativa específica
 // (tentativa 0 = primeira extensão da lista, 1 = segunda, etc.)
-function obterCaminhoFoto(nome, tentativa) {
+// "subpasta" é o id (ou o campo "pasta", se existir) do baralho da pessoa.
+function obterCaminhoFoto(nome, subpasta, tentativa) {
   const extensao = EXTENSOES_SUPORTADAS[tentativa];
-  return `${PASTA_FOTOS}${encodeURIComponent(nome)}.${extensao}`;
+  return `${PASTA_FOTOS}${encodeURIComponent(subpasta)}/${encodeURIComponent(nome)}.${extensao}`;
 }
 
 // Aplica a foto de um personagem numa tag <img>, com fallback automático:
-// se "Nome.jpg" não existir, tenta "Nome.jpeg", depois "Nome.png",
-// depois "Nome.webp" — e se nenhuma existir, usa o avatar gerado.
-function aplicarFotoComFallback(imgEl, nome) {
+// se "Nome.jpg" não existir na subpasta do baralho, tenta "Nome.jpeg",
+// depois "Nome.png", depois "Nome.webp" — e se nenhuma existir, usa o
+// avatar gerado localmente (crachá com iniciais).
+function aplicarFotoComFallback(imgEl, nome, subpasta) {
   let tentativa = 0;
 
   function tentarProximaExtensao() {
     if (tentativa < EXTENSOES_SUPORTADAS.length) {
-      imgEl.src = obterCaminhoFoto(nome, tentativa);
+      imgEl.src = obterCaminhoFoto(nome, subpasta, tentativa);
       tentativa++;
     } else {
       imgEl.onerror = null; // já esgotou as extensões, para de tentar
@@ -554,6 +566,7 @@ function aplicarFotoComFallback(imgEl, nome) {
 const baralhos = [
   {
     id: "classicos",
+    pasta: "E Pluribus unum",
     nome: "E pluribus Unum",
     personagens: [
       { id: 1,  nome: "Cairo Wesley" },
@@ -561,17 +574,26 @@ const baralhos = [
       { id: 3,  nome: "Cintia Vasconcelos" },
       { id: 4,  nome: "Maverick" },
       { id: 5,  nome: "Ludwig" },
-      { id: 6,  nome: "Kusnetsova" },
+      { id: 6,  nome: "Kuzsnetsova" },
       { id: 7,  nome: "Agatha" },
-      { id: 8,  nome: "Paulina" },
+      { id: 8,  nome: "Santa Paulina" },
       { id: 9,  nome: "Luiza Leonora" },
       { id: 10, nome: "Transcendente" },
       { id: 11, nome: "Tarena Blair" },
       { id: 12, nome: "Demônio do Caixão" },
-      { id: 13, nome: "Molestador" },
+      { id: 13, nome: "Torturador Noturno" },
       { id: 14, nome: "Kevin o Chave" },
       { id: 15, nome: "Viscerado" },
-      { id: 16, nome: "Xamã" }
+      { id: 16, nome: "Xamã" },
+      { id: 17, nome: "Amigo da Perna" },
+      { id: 18, nome: "V, O Barqueiro" },
+      { id: 19, nome: "Ksenia" },
+      { id: 20, nome: "Enlouquecido" },
+      { id: 21, nome: "Apollo, O Tradutor"},
+      { id: 22, nome: "Cedric Vertimar" },
+      { id: 23, nome: "Iolana Vertimar" },
+      { id: 24, nome: "Chiara Lennox" },
+
     ]
   },
   {
@@ -588,17 +610,17 @@ const baralhos = [
       { id: 24, nome: "Hans" },
       { id: 25, nome: "Massacre" },
       { id: 26, nome: "Brusco Fyodor" },
-      { id: 27, nome: "Veronica" },
+      { id: 27, nome: "Veronica Falport" },
       { id: 28, nome: "Big Alexander" },
       { id: 29, nome: "Fahr" },
-      { id: 30, nome: "Anastacia" },
+      { id: 30, nome: "Anastasia" },
       { id: 31, nome: "Victor" },
       { id: 32, nome: "Olivier" },
       { id: 33, nome: "Charlotte" },
       { id: 34, nome: "Axel" },
       { id: 35, nome: "Asaka de Fleur" },
       { id: 36, nome: "Lila" },
-      { id: 37, nome: "Angela" },
+      { id: 37, nome: "Angela Cote" },
       { id: 38, nome: "Dorian Michelli"},
       { id: 39, nome: "A Excomungada"},
       { id: 40, nome: "Lycoris" },
@@ -606,11 +628,15 @@ const baralhos = [
       { id: 42, nome: "Yung Yie" },
       { id: 43, nome: "Bernard" },
       { id: 44, nome: "Franz" },
+      { id: 46, nome: "Fiona Dubois"},
+      { id: 47, nome: "Hugo" },
+      { id: 48, nome: "Bernadette"},
 
     ]
   },
   {
     id: "familia",
+    pasta: "Miseria Extrema",
     nome: "Miseria Extrema",
     personagens: [
       { id: 52, nome: "Eva Fernandes" },
@@ -619,11 +645,12 @@ const baralhos = [
       { id: 55, nome: "Bjorn" },
       { id: 56, nome: "Ronaldo Garcia" },
       { id: 57, nome: "Pai do Gerson" },
-      { id: 58, nome: "Domador" },
+      { id: 58, nome: "O Domador" },
     ]
   },
   {
     id: "preexistir",
+    pasta: "Preexistir",
     nome: "Preexistir",
     personagens: [
       { id: 52, nome: "John Marston" },
@@ -634,8 +661,10 @@ const baralhos = [
       { id: 57, nome: "TPK" },
       { id: 58, nome: "Nero" },
       { id: 59, nome: "Djalma" },
-      { id: 60, nome: "Beatriz" },
+      { id: 60, nome: "Beatriz Aikana" },
       { id: 61, nome: "Bola de Fogo", },
+      { id: 62, nome: "Bittencourt"},
+      { id: 62, nome: "Rafaela"},
     ]
   }
 ];
@@ -767,8 +796,9 @@ function renderizarBaralhos() {
 
     // Cada <img> começa sem "src" — aplicamos a busca de foto por nome aqui,
     // depois que os elementos já existem de verdade no DOM.
+    const subpasta = obterSubpastaDoBaralho(baralho);
     const imgsPreview = card.querySelectorAll(".foto-preview");
-    preview.forEach((p, i) => aplicarFotoComFallback(imgsPreview[i], p.nome));
+    preview.forEach((p, i) => aplicarFotoComFallback(imgsPreview[i], p.nome, subpasta));
 
     card.addEventListener("click", () => alternarSelecaoBaralho(baralho.id, card));
     deckGrid.appendChild(card);
@@ -869,26 +899,42 @@ function aplicarParametrosDaUrl() {
 /* ============================================================
    INÍCIO DA PARTIDA
    ------------------------------------------------------------
-   Junta os personagens dos baralhos escolhidos, embaralha usando
-   a semente (código + baralhos + rodada) e corta em 30. Como a
-   semente é igual nos dois navegadores, os dois jogadores recebem
-   exatamente a mesma combinação de suspeitos e o mesmo sorteado.
+   Junta os personagens dos baralhos escolhidos e embaralha usando
+   a semente (código + baralhos + rodada). Como a semente é igual
+   nos dois navegadores, os dois jogadores recebem exatamente o
+   mesmo QUADRO de 30 suspeitos.
+
+   O personagem misterioso é sorteado com Math.random() de verdade
+   (sem semente), de propósito — cada jogador precisa ter o SEU
+   PRÓPRIO segredo, diferente do da outra pessoa, mesmo estando
+   no mesmo quadro de suspeitos.
    ============================================================ */
+
+// Nome da subpasta (dentro de PASTA_FOTOS) onde ficam as fotos de um baralho.
+// Usa o campo "pasta" do baralho se existir; senão usa o próprio "id".
+function obterSubpastaDoBaralho(baralho) {
+  return baralho.pasta || baralho.id;
+}
+
 function montarPersonagensDaPartida() {
   const personagensDosBaralhos = baralhos
     .filter(b => baralhosSelecionados.has(b.id))
-    .flatMap(b => b.personagens);
+    .flatMap(b => {
+      const subpasta = obterSubpastaDoBaralho(b);
+      // Marca cada personagem com a subpasta do seu baralho, para
+      // sabermos onde procurar a foto dele mais tarde.
+      return b.personagens.map(p => ({ ...p, subpasta }));
+    });
 
   const textoSemente = montarTextoDaSemente();
   const rng = criarGeradorComSemente(textoSemente);
 
-  // Embaralha e corta em 30 — o corte usa o mesmo rng, então mesmo
-  // código = mesmos 30 (ou menos) suspeitos nos dois navegadores.
+  // Embaralha e corta em 30 — o corte usa o rng com semente, então
+  // mesmo código = mesmos 30 (ou menos) suspeitos nos dois navegadores.
   personagensEmJogo = embaralhar(personagensDosBaralhos, rng).slice(0, LIMITE_EM_JOGO);
 
-  // Continua usando o MESMO rng (não cria outro) para sortear o
-  // personagem misterioso — garante que o sorteado também bata.
-  const indiceMisterio = Math.floor(rng() * personagensEmJogo.length);
+  // Sorteia o personagem misterioso com aleatoriedade real (sem semente).
+  const indiceMisterio = Math.floor(Math.random() * personagensEmJogo.length);
   personagemSorteado = personagensEmJogo[indiceMisterio];
   revelado = false;
 }
@@ -943,7 +989,7 @@ function renderizarPersonagens() {
     `;
 
     // Busca a foto pelo nome do personagem (com fallback automático)
-    aplicarFotoComFallback(card.querySelector(".foto-personagem"), pessoa.nome);
+    aplicarFotoComFallback(card.querySelector(".foto-personagem"), pessoa.nome, pessoa.subpasta);
 
     card.addEventListener("click", () => {
       card.classList.toggle("descartado");
@@ -978,7 +1024,7 @@ function atualizarTelaDoMisterio() {
 function revelarPersonagem() {
   if (!personagemSorteado || revelado) return;
 
-  aplicarFotoComFallback(caseImage, personagemSorteado.nome);
+  aplicarFotoComFallback(caseImage, personagemSorteado.nome, personagemSorteado.subpasta);
   caseImage.hidden = false;
   caseQuestionMark.style.display = "none";
   caseName.textContent = personagemSorteado.nome;
