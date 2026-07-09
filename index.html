@@ -391,10 +391,8 @@ h1 {
           <button class="btn btn-outline btn-small" id="copiarLinkBtn" type="button">Copiar link do convite</button>
         </div>
         <p class="sync-hint">
-          Os dois jogadores precisam digitar o mesmo código e marcar os mesmos baralhos — assim os dois veem
-          exatamente o mesmo QUADRO de suspeitos. O suspeito secreto de cada jogador é sorteado à parte,
-          então mesmo com o mesmo código vocês não ficam com o mesmo segredo. O link do convite já leva
-          o código e os baralhos marcados.
+          Os dois jogadores precisam digitar o mesmo código e marcar os mesmos baralhos — assim os dois recebem
+          exatamente a mesma combinação de suspeitos. O link do convite já leva o código e os baralhos marcados.
         </p>
         <p class="sync-feedback" id="syncFeedback"></p>
       </div>
@@ -452,14 +450,13 @@ h1 {
    BARALHOS (catálogo de personagens agrupados)
    ------------------------------------------------------------
    Cada baralho tem: id, nome e uma lista de personagens.
-   A lista de personagens usa o MESMO estilo simples da
-   primeira versão do jogo — um array de objetos com
-   id, nome e imagem — então editar continua fácil:
+   Cada personagem só precisa de id e nome — a foto é buscada
+   automaticamente pelo nome (ver explicação mais abaixo):
 
-     { id: 1, nome: "João", imagem: "joao.png" }
+     { id: 1, nome: "João" }
 
    Para ADICIONAR alguém a um baralho: copie uma linha dentro
-   da lista "personagens" daquele baralho e troque id/nome/imagem.
+   da lista "personagens" daquele baralho e troque id/nome.
    Para REMOVER: apague a linha.
    Para CRIAR um baralho novo: copie um bloco inteiro do array
    "baralhos" (com id, nome e personagens) e edite.
@@ -467,94 +464,178 @@ h1 {
    Um baralho pode ter QUALQUER quantidade de personagens
    (inclusive mais de 30) — o limite de 30 em tela só é
    aplicado na hora de montar a partida, em iniciarPartida().
+
+   IMPORTANTE — COMO AS FOTOS SÃO CARREGADAS AGORA:
+   Cada personagem só precisa de "id" e "nome". A foto NÃO fica
+   mais no código — ela é buscada automaticamente numa pasta
+   chamada "fotos", usando o NOME EXATO do personagem como nome
+   do arquivo. Exemplo: o personagem { id: 1, nome: "Cairo Wesley" }
+   vai procurar por um arquivo chamado:
+
+       fotos/Cairo Wesley.jpg   (ou .jpeg / .png / .webp)
+
+   Ou seja, para dar certo:
+   1) Crie uma pasta chamada "fotos" do lado do arquivo .html.
+   2) Salve cada foto dentro dela com o nome IDÊNTICO ao campo
+      "nome" do personagem (mesma capitalização, acentos e espaços).
+   3) Pode usar .jpg, .jpeg, .png ou .webp — o jogo tenta essas
+      extensões nessa ordem, uma atrás da outra.
+   Se nenhuma foto for encontrada, o jogo mostra um "crachá" com
+   as iniciais do personagem no lugar (nunca fica quebrado).
    ============================================================ */
+
+// Pasta onde as fotos ficam salvas (relativa ao arquivo .html)
+const PASTA_FOTOS = "fotos/";
+// Ordem de extensões que o jogo tenta ao procurar a foto de alguém
+const EXTENSOES_SUPORTADAS = ["jpg", "jpeg", "png", "webp"];
+
+/* ============================================================
+   AVATAR LOCAL (usado só quando NENHUMA foto é encontrada)
+   ------------------------------------------------------------
+   Gera um "crachá" com as iniciais do nome sobre um fundo
+   colorido, sempre igual pro mesmo nome. É só um fallback —
+   nunca depende de internet, então nunca quebra.
+   ============================================================ */
+function gerarAvatarSVG(nome) {
+  const paleta = [
+    "#8c6b4f", "#4f6b5c", "#6b4f5a", "#5a6b4f", "#4f5a6b",
+    "#6b5a4f", "#5c4f6b", "#4f6b6b", "#6b4f4f", "#556b4f",
+    "#7a5230", "#3f6b64", "#9c7847", "#5a4f3f", "#2b2620"
+  ];
+
+  let hash = 0;
+  for (let i = 0; i < nome.length; i++) {
+    hash = nome.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const cor = paleta[Math.abs(hash) % paleta.length];
+
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  const iniciais = partes.length > 1
+    ? (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+    : partes[0].slice(0, 2).toUpperCase();
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <rect width="100" height="100" fill="${cor}"/>
+      <text x="50" y="60" font-family="Courier New, monospace" font-size="34"
+            font-weight="700" fill="#f2e8d5" text-anchor="middle">${iniciais}</text>
+    </svg>`;
+
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
+// Monta o caminho do arquivo de foto para uma tentativa específica
+// (tentativa 0 = primeira extensão da lista, 1 = segunda, etc.)
+function obterCaminhoFoto(nome, tentativa) {
+  const extensao = EXTENSOES_SUPORTADAS[tentativa];
+  return `${PASTA_FOTOS}${encodeURIComponent(nome)}.${extensao}`;
+}
+
+// Aplica a foto de um personagem numa tag <img>, com fallback automático:
+// se "Nome.jpg" não existir, tenta "Nome.jpeg", depois "Nome.png",
+// depois "Nome.webp" — e se nenhuma existir, usa o avatar gerado.
+function aplicarFotoComFallback(imgEl, nome) {
+  let tentativa = 0;
+
+  function tentarProximaExtensao() {
+    if (tentativa < EXTENSOES_SUPORTADAS.length) {
+      imgEl.src = obterCaminhoFoto(nome, tentativa);
+      tentativa++;
+    } else {
+      imgEl.onerror = null; // já esgotou as extensões, para de tentar
+      imgEl.src = gerarAvatarSVG(nome);
+    }
+  }
+
+  imgEl.onerror = tentarProximaExtensao;
+  tentarProximaExtensao(); // primeira tentativa
+}
+
 const baralhos = [
   {
     id: "classicos",
     nome: "E pluribus Unum",
     personagens: [
-      { id: 1,  nome: "Cairo Wesley",     imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287230035345801276/Photo_Face_Swap.jpg?ex=6a4a61a4&is=6a491024&hm=1127b098c0f30e3cfbe12abe0025782e9579f65fb6423b486dfd2eac239a349b&" },
-      { id: 2,  nome: "Caio",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287228411319681055/11946452-3381-4e42-855f-3f9a56055bee.png?ex=6a4a6020&is=6a490ea0&hm=e75071511fe37fe3c39d3e7552c86048128b1a4e6896c01ca599bbb43b3afa8b&" },
-      { id: 3,  nome: "Cintia Vasconcelos",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1523032239741472941/IMG_4795.jpg?ex=6a4aa1ce&is=6a49504e&hm=3e6309c91e698ab6713146dc2752fa1e34dc0891753f66d97d6555dc163f796b&" },
-      { id: 4,  nome: "Maverick",    imagem: "https://media.discordapp.net/attachments/892944780206678057/1287228001502888038/remix-5a9182fc-3545-4ece-a358-2b7097a0a794.png?ex=6a4a5fbf&is=6a490e3f&hm=f5413ae2e236f77bc605213112f82377db256ef5345933954f77753f283fae9f&=&format=webp&quality=lossless&width=246&height=438" },
-      { id: 5,  nome: "Ludwig",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287260495304196108/Adrien_Brody.jpg?ex=6a4a7e02&is=6a492c82&hm=b3fa663ba5f36f68a966c84dd2ba04366d711e1edfa2a20c93aefe81755eeea8&https://api.dicebear.com/7.x/avataaars/svg?seed=ElisaPrado" },
-      { id: 6,  nome: "Kusnetsova",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1287261052165292062/f93de9a631a43ed317e7a23d454436a7.png?ex=6a4a7e86&is=6a492d06&hm=dc4cb836999fb9f74e44e120761e7000ad02f0ad28fca0f6d6f88a852f35b2bc&" },
-      { id: 7,  nome: "Agatha",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1292374579435802766/f4ea7e76be65ddde7a364c1c9beea34a.png?ex=6a49fb1e&is=6a48a99e&hm=f440d9c07a17eed85bedee8b971a473c228510b754177becdc0861758867d98f&" },
-      { id: 8,  nome: "Paulina",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1292392108396642345/96df950eb8a9a4ac3b6dd8b7f03b8ef6.png?ex=6a4a0b72&is=6a48b9f2&hm=c60205204ce953024aa54186c8243d07aa33892e5832a1f8bcb5cede24130da6&" },
-      { id: 9,  nome: "Luiza Leonora",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1289802926050775081/5c54882e7b344a3f09ee5562f8aeb8f8.png?ex=6a4a8354&is=6a4931d4&hm=25f3dae910d96813198cdf3ddc54aac8bd62177f220c5b0eec658cd29d997783&" },
-      { id: 10, nome: "Transcendente",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1307220575596449792/c860703155daed5f0115aaf2fdb75dd4.jpg?ex=6a4a98c8&is=6a494748&hm=9ecd4726dcf5af7248c23878466dee093a45cb3f9891cb55f3ada1cf2178e0ed&" },
-      { id: 11, nome: "Tarena Blair",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1307225574640586824/773e041f2c272d1d53f1aca8c81fd913.jpg?ex=6a4a9d70&is=6a494bf0&hm=32abcbb95fbb831d321fca142b37df662b0eebbe8414d41156ff9b1305ec6f99&" },
-      { id: 12, nome: "Demônio do Caixão",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1317692953145114645/500.png?ex=6a4a7671&is=6a4924f1&hm=302cf453031ad2b73677bfc0c75526c8304ddc087ec8f9646018627fc5a2a6a5&" },
-      { id: 13, nome: "Molestador",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1327515904761925632/43871a9e0ffebe84f160e8a7c04468a0.png?ex=6a4a9a47&is=6a4948c7&hm=61d1ae07dc3bceafbc4b2950f1455a1d0f8b4504e5511d81f730dc41cc54d193&" },
-      { id: 14, nome: "Kevin o Chave", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1523035685576114258/GLX6VgvWoAA0-V4.png?ex=6a4aa504&is=6a495384&hm=38f98cdc177ed21ce2eb97488f28c54664fdfa71999ffe5c55fe72dad67f6e4b&" },
-      { id: 15, nome: "Viscerado", imagem: "https://static.wikia.nocookie.net/animeverso/images/7/75/Bestial_em_Desconjura%C3%A7%C3%A3o.webp/revision/latest?cb=20250205162024&path-prefix=pt-br" },
-      { id: 16, nome: "O Xamã",  imagem: "https://cdn.discordapp.com/attachments/1494585508704026634/1518134806955688147/image.png?ex=6a4a9cf7&is=6a494b77&hm=ec18ea5db95fd214736b49523989f8bdfe9910f8c552cf7919b21eadaf26e3a6&" }
+      { id: 1,  nome: "Cairo Wesley" },
+      { id: 2,  nome: "Caio" },
+      { id: 3,  nome: "Cintia Vasconcelos" },
+      { id: 4,  nome: "Maverick" },
+      { id: 5,  nome: "Ludwig" },
+      { id: 6,  nome: "Kusnetsova" },
+      { id: 7,  nome: "Agatha" },
+      { id: 8,  nome: "Paulina" },
+      { id: 9,  nome: "Luiza Leonora" },
+      { id: 10, nome: "Transcendente" },
+      { id: 11, nome: "Tarena Blair" },
+      { id: 12, nome: "Demônio do Caixão" },
+      { id: 13, nome: "Molestador" },
+      { id: 14, nome: "Kevin o Chave" },
+      { id: 15, nome: "Viscerado" },
+      { id: 16, nome: "Xamã" }
     ]
   },
   {
     id: "Regarder",
     nome: "Regarder",
-    // Baralho de propósito com mais de 30 pessoas, para mostrar que
-    // um baralho pode guardar bastante gente — o corte pra 30 só
-    // acontece na montagem da partida (ver iniciarPartida()).
     personagens: [
-      { id: 17, nome: "Omar Rafiq",      imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523045228301389844/cf5edbda-d84a-47c2-bcee-77c9d51c19da.png?ex=6a4aade7&is=6a495c67&hm=579a9af9bb2fb22699ca8df514f4b94e77079181446ac682ee7ba3f2258459a6&" },
-      { id: 18, nome: "Helena Krieger",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1383673111873982575/1f2a8fbe-25a9-4d97-894f-45bbf3f055c5.png?ex=6a4a8e41&is=6a493cc1&hm=36b9810264876b467ebfa36e77d60e787b761d11601b76abaa8545491cec752f&" },
-      { id: 19, nome: "Vincent",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523050516689453119/image.png?ex=6a4ab2d4&is=6a496154&hm=a7d2ec38a2a1592e294ac12f09e5918cfe21b597ff3a08a08bb4e17739ce9772&" },
-      { id: 20, nome: "Xavier Vidales", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1401427149226901616/file_00000000c35061f9a1a4eb1f4e16b2eb.png?ex=6a4a8b7d&is=6a4939fd&hm=54b4e1f4e92a25482ffa579a0f8909dbc89a2a84a764f1d47f77c166665b7083&" },
-      { id: 21, nome: "Rex",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523060451649392740/WhatsApp_Image_2026-07-04_at_17.17.51.jpeg?ex=6a4abc14&is=6a496a94&hm=fd8a05d4fc2b9d14cccf99c93e0ec9001a0da765881d8f4eec1df39b62fed921&" },
-      { id: 22, nome: "Henry",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1383678091661934722/image.png?ex=6a4a92e4&is=6a494164&hm=ad71bdaf1e7f57ea48f2c4b138c02fbd98f9ac418f5d0ac6a282e43e30efb199&" },
-      { id: 23, nome: "Graggle",     imagem: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/05045b60-ca46-4923-a863-711589923258/df7h9ht-90364473-92b3-44b7-9150-00c7e83cf7a0.png/v1/fill/w_1280,h_1484/graggle_simpson_by_artsofbardelli_df7h9ht-fullview.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTQ4NCIsInBhdGgiOiIvZi8wNTA0NWI2MC1jYTQ2LTQ5MjMtYTg2My03MTE1ODk5MjMyNTgvZGY3aDlodC05MDM2NDQ3My05MmIzLTQ0YjctOTE1MC0wMGM3ZTgzY2Y3YTAucG5nIiwid2lkdGgiOiI8PTEyODAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.9fT3hZMTpGuSSW8HEbhUtMgkoRijGiTXhTU3-YX-2m4" },
-      { id: 24, nome: "Hans",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1492744551977189496/RE5DX92009-09-1605-47-52-50.jpg?ex=6a4a8773&is=6a4935f3&hm=4a5c87c172a0ce109f15b90ac37cbe7e1cace85b27f8bba87013a4986416f75c&=&format=webp&width=1423&height=800" },
-      { id: 25, nome: "Massacre",      imagem: "https://cdn.discordapp.com/attachments/1494585508704026634/1500398944772034692/Captura_de_tela_2026-05-03_042752.png?ex=6a4a07e8&is=6a48b668&hm=72a818823ed8a22ffda85a00545068253e13b3ac9f36be6c413c1694098c9552&" },
-      { id: 26, nome: "Brusco Fyodor",     imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1492726901935046786/bda03ac0cac99c32817a4baa21051f88.png?ex=6a4a7702&is=6a492582&hm=2d24182caded3b436d545722a25c324ad36cc7c9dddc51a20a6a8656dafc33be&" },
-      { id: 27, nome: "Veronica",      imagem: "https://media.discordapp.net/attachments/892944780206678057/1492787109625466940/e9dc76b96e9c30bfe91a0ac8e5a58219.png?ex=6a4aaf15&is=6a495d95&hm=bbc60e15a08f9d789a7bd9de0977606bd0769aceb2362eb89c136bdfd77fdae2&=&format=webp&quality=lossless&width=766&height=930" },
-      { id: 28, nome: "Big Alexander",     imagem: "https://media.discordapp.net/attachments/1494585508704026634/1505432165427707954/image.png?ex=6a4a8b35&is=6a4939b5&hm=815ddaf67216b440087b3cbd5da6fee2036aabf0a45fd7e3fb67311c51b0106b&=&format=webp&quality=lossless&width=619&height=930" },
-      { id: 29, nome: "Fahr",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1461954864216150262/0d9a4bab4af5c33abf70ad41b67a5b78.png?ex=6a4a93d1&is=6a494251&hm=2faed4131030ebdfb9c8aef22a7cd0255a27cec5d07d6c39bfac52127cc6b295&" },
-      { id: 30, nome: "Anastacia",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1461955059305938984/74f0a667ae04faa831bb368ddbdbaf66.png?ex=6a4a93ff&is=6a49427f&hm=247f46a5fa7d687b52cd901e7c12fe83b689b58cd1ae73b5f15df00464443937&" },
-      { id: 31, nome: "Victor",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464852425901998252/9k.png?ex=6a4a9261&is=6a4940e1&hm=caab92eb8eeb0467f2e3b0c85088667ffebc2c5a0d7f7a34cf6a50bc3b32f037&" },
-      { id: 32, nome: "Olivier",      imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464852379873710220/image.png?ex=6a4a9257&is=6a4940d7&hm=f8a17b2a6c3638f80073235127bf28ab53e193d20510598ddab08d3587a6291f&" },
-      { id: 33, nome: "Charlotte",   imagem: "https://media.discordapp.net/attachments/892944780206678057/1523209458648350730/image.png?ex=6a4b46da&is=6a49f55a&hm=c296cb89dbfaf6930994ddd8a4862feb2c15b334e035c7ec697b32cbf02fafda&=&format=webp&quality=lossless&width=815&height=579" },
-      { id: 34, nome: "Axel",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1523209507008942172/image.png?ex=6a4b46e6&is=6a49f566&hm=b279734682bb5c789680173d4f4cf901633028176268db2af66382a93c4dc03f&" },
-      { id: 35, nome: "Asaka de Fleur",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464851209944043688/Captura_de_tela_2026-01-25_021528.png?ex=6a4a9140&is=6a493fc0&hm=d06963eb68a16323d65d13f3d1c7675a6fb1981003ed8a84e79cea3e64aa5480&" },
-      { id: 36, nome: "Lila", imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1464870340306931928/image.png?ex=6a4aa311&is=6a495191&hm=c541ce3c29cb6e34f896802aee7d4c6a97914f9542fc951056820637abcb2929&" },
-      { id: 37, nome: "Angela",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1406498686229418024/image.png?ex=6a4a89ba&is=6a49383a&hm=8bc560a9f9585edd2c7e75c1c991b8418a11402b09d7207f12b9655399b160c9&" },
-      { id: 38, nome: "Dorian Michelli",    imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523049317009592371/image.png?ex=6a4ab1b6&is=6a496036&hm=dde37bb3e5061f86b1d31893d02d7aaf7ac64d3de9b4fc35fd30d9c89cf2f87c&" },
-      { id: 39, nome: "A Excomungada",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1411584205946617887/image.png?ex=6a4a94fc&is=6a49437c&hm=307040a9ce43b0601f1a1f70c763de5c90820d92aeae5fe0a4d0c163904d2374&" },
-      { id: 40, nome: "Lycoris",      imagem: "https://media.discordapp.net/attachments/892944780206678057/1523209939613519892/image.png?ex=6a4b474d&is=6a49f5cd&hm=13554a576b46448a61b42d7ea9b8ce6c5b8084b0812556f94fbec3c48d0f299f&=&format=webp&quality=lossless&width=543&height=930" },
-      { id: 41, nome: "Maurice",     imagem: "https://media.discordapp.net/attachments/892944780206678057/1391286915977711676/Balu_Jovem_.png?ex=6a4a91a9&is=6a494029&hm=46dbd2e90aa7e478b56605eff865b4b163b18c1b0e98c9a41c8e44fcdb544f2f&=&format=webp&quality=lossless&width=690&height=930" },
-      { id: 42, nome: "Yung Yie",     imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523059423436865556/f4ea7981-5d5b-4e8e-92cc-c2d8a902696e.png?ex=6a4abb1f&is=6a49699f&hm=fd31c519ef5bb0c9910dd6d53d624c823e67f0568531c4dab94fe8feca43d1d7&" },
-      { id: 43, nome: "Bernard",    imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523060313552060486/image.png?ex=6a4abbf3&is=6a496a73&hm=9ee8912ec9f89dce55c4a8a6c304608007e35bdc20d615a675fb82bb05529b3c&" },
-      { id: 44, nome: "Franz",      imagem: "https://media.discordapp.net/attachments/1465129775822802967/1523060528333852794/image.png?ex=6a4abc27&is=6a496aa7&hm=22c7bfb500842c8bf791670fd9f1992b685890a3c948508270519a47719e4f64&=&format=webp&quality=lossless&width=264&height=254" },
+      { id: 17, nome: "Omar Rafiq" },
+      { id: 18, nome: "Helena Krieger" },
+      { id: 19, nome: "Vincent" },
+      { id: 20, nome: "Xavier Vidales" },
+      { id: 21, nome: "Rex" },
+      { id: 22, nome: "Henry" },
+      { id: 23, nome: "Graggle" },
+      { id: 24, nome: "Hans" },
+      { id: 25, nome: "Massacre" },
+      { id: 26, nome: "Brusco Fyodor" },
+      { id: 27, nome: "Veronica" },
+      { id: 28, nome: "Big Alexander" },
+      { id: 29, nome: "Fahr" },
+      { id: 30, nome: "Anastacia" },
+      { id: 31, nome: "Victor" },
+      { id: 32, nome: "Olivier" },
+      { id: 33, nome: "Charlotte" },
+      { id: 34, nome: "Axel" },
+      { id: 35, nome: "Asaka de Fleur" },
+      { id: 36, nome: "Lila" },
+      { id: 37, nome: "Angela" },
+      { id: 38, nome: "Dorian Michelli"},
+      { id: 39, nome: "A Excomungada"},
+      { id: 40, nome: "Lycoris" },
+      { id: 41, nome: "Maurice" },
+      { id: 42, nome: "Yung Yie" },
+      { id: 43, nome: "Bernard" },
+      { id: 44, nome: "Franz" },
+
     ]
   },
   {
     id: "familia",
-    nome: "Miséria Extrema",
+    nome: "Miseria Extrema",
     personagens: [
-      { id: 52, nome: "Layla Versace",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000080726130819/CWafs3HeNigAAAABJRU5ErkJggg.png?ex=6a4a7dfa&is=6a492c7a&hm=91dde3b2015fa469cf433cc0936a8cb023e1af16f32a9231d06ea0ccefd32452&" },
-      { id: 53, nome: "Ronaldo Garcia",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000286615863346/IMG_3474.jpg?ex=6a4a7e2b&is=6a492cab&hm=477df3a94a41ee4f151e3f211de27437620b1daae7448f573d8e043d1effdb50&" },
-      { id: 54, nome: "Bjorn",       imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMnvcSk6IX76V8eyE0XDoVs6QCxf2MhqNH3frdHRzlixdrtrp8vBsOaak&s=10" },
-      { id: 55, nome: "Eva Fernandes",       imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1441999891974066228/IMG-20251122-WA0092.jpg?ex=6a4a7dcd&is=6a492c4d&hm=058b03b0366071264906353344f2de6583df36fd613a85d6327e8c96e16f7cde&" },
-      { id: 56, nome: "Nazaré Hammestron",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1442000177148854332/IMG-20250916-WA0001.jpg?ex=6a4a7e11&is=6a492c91&hm=f3115c8b4ebdfd89d84422d491411cb83720c833c88ce8e56f0947292bf7c69c&" },
-      { id: 57, nome: "Domador",   imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1447463110343524402/28b11a03d45fc1219f1a1e89bddcaed3.png?ex=6a4a9752&is=6a4945d2&hm=d013fb52b47a9119bb624c04135d7c9785e0ebc803df8433b50aee6f7aeb5b67&" },
-      { id: 58, nome: "Pai do Gerson",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1459413554540056742/image0.jpg?ex=6a4a8f89&is=6a493e09&hm=bc5eda46f605b1d2f4c3a28167a59cdf9b7a3123987958b1878821e236261062&" },
+      { id: 52, nome: "Eva Fernandes" },
+      { id: 53, nome: "Nazaré" },
+      { id: 54, nome: "Layla" },
+      { id: 55, nome: "Bjorn" },
+      { id: 56, nome: "Ronaldo Garcia" },
+      { id: 57, nome: "Pai do Gerson" },
+      { id: 58, nome: "Domador" },
     ]
-  }
-  ,{
+  },
+  {
     id: "preexistir",
     nome: "Preexistir",
     personagens: [
-      { id: 52, nome: "John Marston",       imagem: "https://i.pinimg.com/736x/b2/34/7f/b2347f10a1cc50f5f08e44bba3c34c8c.jpg" },
-      { id: 53, nome: "Tião",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1360775562833957098/file_00000000f72461f7a52d576712ca9b2a_conversation_id67f94bbe-33a4-8009-8d78-6d71b2cadb62message_id443971be-8e96-4f2c-876e-02cda98d8e7f.png?ex=6a4a4fc0&is=6a48fe40&hm=e0c386d037d5f764e260c7409c9d447ebadf105b5cb0f53fb54c8c5362a3dfa7&=&format=webp&quality=lossless&width=620&height=930" },
-      { id: 54, nome: "Lina Mugler",       imagem: "https://cdn.discordapp.com/attachments/1465129775822802967/1523056534093955253/image.png?ex=6a4ab86e&is=6a4966ee&hm=814518f6b059e2d0da959f0c6ed75e70d96719b3a90f98961059dd42c6bbe79f&" },
-      { id: 55, nome: "Cabrito",       imagem: "https://media.discordapp.net/attachments/892944780206678057/1360782770837913710/16429c4eca26183f839af4453c9deb8f.jpg?ex=6a4a5676&is=6a4904f6&hm=20aa429e41c3fa82a0fb1568effb5e61e86f78472d654eefa08f4d064a90bb6a&=&format=webp&width=523&height=930" },
-      { id: 56, nome: "Zahra",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360776494179422318/3e0606985fcd8a2c8a3262bf3fee5f5f.jpg?ex=6a4a509e&is=6a48ff1e&hm=4fcd8f439332d0a367489f75a2eb216ef1e0901ecf3548a11e5848d12e929167&" },
-      { id: 57, nome: "TPK",   imagem: "https://media.discordapp.net/attachments/892944780206678057/1371016856743182346/4230254c464762b4f93cae6fc87244fa.png?ex=6a4aa7b2&is=6a495632&hm=286df353853b07d6244a8ae9526c3c2aab849f5c11f86ce02ad59f319b0d3dc8&=&format=webp&quality=lossless&width=246&height=438" },
-      { id: 58, nome: "Nero",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360775990778925276/IMG_6111.jpg?ex=6a4a5026&is=6a48fea6&hm=cd779709ef0d1a7e7f861024c5633820e809904deb889c209e3c50dc047b2833&" },
-      { id: 59, nome: "Djalma",   imagem: "https://media.discordapp.net/attachments/892944780206678057/1360436513195688058/image.png?ex=6a4a657c&is=6a4913fc&hm=5c4c0754bd6e8f7a8ef98d12a8b7e8d47fb523169a095e2f107bff8f8bcd1798&=&format=webp&quality=lossless&width=643&height=930" },
-      { id: 60, nome: "Beatriz",  imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1371008028605812766/1cef9d9cf4222769eb5b24e1b8751973.png?ex=6a4a9f7a&is=6a494dfa&hm=741f4bf89a50c0f3be15359783784ace8fecb3e31e4e1c137a4c62e873eea2a1&" },
-      { id: 61, nome: "Bola de Fogo",    imagem: "https://cdn.discordapp.com/attachments/892944780206678057/1360815939288829993/dc8129d755544b4557254c73ecb9ee66.png?ex=6a4a755a&is=6a4923da&hm=5cb27e5d1f7359a478f44c123b206cdfeb5b478fd24b7d52d5a1f4784565a5c9&" },
+      { id: 52, nome: "John Marston" },
+      { id: 53, nome: "Tião" },
+      { id: 54, nome: "Lina Mugler" },
+      { id: 55, nome: "Cabrito" },
+      { id: 56, nome: "Zahra" },
+      { id: 57, nome: "TPK" },
+      { id: 58, nome: "Nero" },
+      { id: 59, nome: "Djalma" },
+      { id: 60, nome: "Beatriz" },
+      { id: 61, nome: "Bola de Fogo", },
     ]
   }
 ];
@@ -679,10 +760,15 @@ function renderizarBaralhos() {
         <div class="deck-check"></div>
       </div>
       <div class="deck-avatars">
-        ${preview.map(p => `<img src="${p.imagem}" alt="${p.nome}">`).join("")}
+        ${preview.map(p => `<img class="foto-preview" alt="${p.nome}">`).join("")}
         ${restante > 0 ? `<span class="deck-extra">+${restante}</span>` : ""}
       </div>
     `;
+
+    // Cada <img> começa sem "src" — aplicamos a busca de foto por nome aqui,
+    // depois que os elementos já existem de verdade no DOM.
+    const imgsPreview = card.querySelectorAll(".foto-preview");
+    preview.forEach((p, i) => aplicarFotoComFallback(imgsPreview[i], p.nome));
 
     card.addEventListener("click", () => alternarSelecaoBaralho(baralho.id, card));
     deckGrid.appendChild(card);
@@ -783,17 +869,10 @@ function aplicarParametrosDaUrl() {
 /* ============================================================
    INÍCIO DA PARTIDA
    ------------------------------------------------------------
-   Junta os personagens dos baralhos escolhidos e embaralha usando
-   a semente (código + baralhos + rodada). Como a semente é igual
-   nos dois navegadores, os dois jogadores recebem exatamente o
-   mesmo QUADRO de 30 suspeitos.
-
-   O personagem misterioso, porém, é sorteado com Math.random()
-   de verdade (sem semente) — de propósito. Se usasse a mesma
-   semente, os dois jogadores cairiam sempre no mesmo suspeito
-   secreto, o que não faz sentido no Cara a Cara: cada jogador
-   precisa ter o SEU PRÓPRIO segredo, diferente do da outra
-   pessoa, mesmo estando no mesmo quadro de suspeitos.
+   Junta os personagens dos baralhos escolhidos, embaralha usando
+   a semente (código + baralhos + rodada) e corta em 30. Como a
+   semente é igual nos dois navegadores, os dois jogadores recebem
+   exatamente a mesma combinação de suspeitos e o mesmo sorteado.
    ============================================================ */
 function montarPersonagensDaPartida() {
   const personagensDosBaralhos = baralhos
@@ -803,14 +882,13 @@ function montarPersonagensDaPartida() {
   const textoSemente = montarTextoDaSemente();
   const rng = criarGeradorComSemente(textoSemente);
 
-  // Embaralha e corta em 30 — o corte usa o rng com semente, então
-  // mesmo código = mesmos 30 (ou menos) suspeitos nos dois navegadores.
+  // Embaralha e corta em 30 — o corte usa o mesmo rng, então mesmo
+  // código = mesmos 30 (ou menos) suspeitos nos dois navegadores.
   personagensEmJogo = embaralhar(personagensDosBaralhos, rng).slice(0, LIMITE_EM_JOGO);
 
-  // Sorteia o personagem misterioso com aleatoriedade real (Math.random,
-  // sem semente) — cada jogador recebe um segredo próprio, mesmo com o
-  // mesmo código e o mesmo quadro de suspeitos.
-  const indiceMisterio = Math.floor(Math.random() * personagensEmJogo.length);
+  // Continua usando o MESMO rng (não cria outro) para sortear o
+  // personagem misterioso — garante que o sorteado também bata.
+  const indiceMisterio = Math.floor(rng() * personagensEmJogo.length);
   personagemSorteado = personagensEmJogo[indiceMisterio];
   revelado = false;
 }
@@ -858,11 +936,14 @@ function renderizarPersonagens() {
     card.innerHTML = `
       <div class="pin"></div>
       <div class="photo-frame">
-        <img src="${pessoa.imagem}" alt="${pessoa.nome}">
+        <img class="foto-personagem" alt="${pessoa.nome}">
         <div class="stamp">DESCARTADO</div>
       </div>
       <p class="card-name">${pessoa.nome}</p>
     `;
+
+    // Busca a foto pelo nome do personagem (com fallback automático)
+    aplicarFotoComFallback(card.querySelector(".foto-personagem"), pessoa.nome);
 
     card.addEventListener("click", () => {
       card.classList.toggle("descartado");
@@ -897,7 +978,7 @@ function atualizarTelaDoMisterio() {
 function revelarPersonagem() {
   if (!personagemSorteado || revelado) return;
 
-  caseImage.src = personagemSorteado.imagem;
+  aplicarFotoComFallback(caseImage, personagemSorteado.nome);
   caseImage.hidden = false;
   caseQuestionMark.style.display = "none";
   caseName.textContent = personagemSorteado.nome;
